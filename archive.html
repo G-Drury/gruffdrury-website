@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Archive — Griff Drury</title>
+<meta name="description" content="Full archive of work by Gruffudd Drury — Graphic & Brand, UX & Digital, Material & Object, Research & Writing, Drawing Practice.">
+<link rel="stylesheet" href="css/main.css">
+<style>
+/* ── ARCHIVE SPECIFIC ── */
+html, body { height: 100%; overflow: hidden; }
+
+/* DISC BAR — transparent floating */
+.disc-bar { position: fixed; top: 52px; left: 0; right: 0; z-index: 400; padding: 0 28px; pointer-events: none; }
+.disc-bar-inner { display: flex; align-items: center; height: 38px; pointer-events: all; }
+.disc-spacer { flex: 1; }
+.disc-item { position: relative; cursor: pointer; padding: 0 4px; user-select: none; white-space: nowrap; flex-shrink: 0; }
+.disc-item .base { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 300; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); display: block; transition: color 0.25s; text-shadow: 0 1px 8px var(--bg), 0 0 14px var(--bg); }
+.disc-item:hover .base { color: var(--ink); }
+.disc-item .fill { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 300; letter-spacing: 0.16em; text-transform: uppercase; color: var(--orange); position: absolute; top: 0; left: 4px; white-space: nowrap; pointer-events: none; clip-path: inset(0 100% 0 0); transition: clip-path 0.38s cubic-bezier(0.32,0.72,0,1); text-shadow: 0 1px 8px var(--bg), 0 0 14px var(--bg); }
+.disc-item.active .fill { clip-path: inset(0 0% 0 0); }
+
+/* ARROWS */
+.disc-arrows { position: fixed; top: 90px; left: 50%; transform: translateX(-50%); z-index: 399; display: flex; align-items: center; gap: 16px; }
+.disc-arrow { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--muted); cursor: pointer; transition: color 0.2s; user-select: none; padding: 2px 6px; text-shadow: 0 1px 6px var(--bg), 0 0 12px var(--bg); }
+.disc-arrow:hover { color: var(--orange); }
+
+/* SIDE DOT */
+.side-dot { position: fixed; left: 10px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; z-index: 450; }
+.sd-line { width: 0.5px; height: 18px; background: var(--border); }
+.sd-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--orange); }
+.sd-lbl { font-family: 'DM Mono', monospace; font-size: 6px; font-weight: 300; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); writing-mode: vertical-rl; margin-top: 2px; }
+
+/* SIDE NAV — floating panel */
+.snav-bd { position: fixed; inset: 0; z-index: 550; pointer-events: none; }
+.snav-bd.open { pointer-events: all; }
+.snav {
+  position: fixed; top: 100px; left: 20px; z-index: 560;
+  background: var(--bg); border: 0.5px solid var(--border); border-radius: 4px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+  transform: translateX(calc(-100% - 24px)); opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.32,0.72,0,1), opacity 0.3s, width 0.35s cubic-bezier(0.32,0.72,0,1), background 0.4s;
+  width: 220px; max-height: calc(100vh - 120px);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.snav.open { transform: translateX(0); opacity: 1; }
+.snav.expanded { width: 440px; }
+.snav-header { display: flex; align-items: center; justify-content: space-between; padding: 11px 14px 10px; border-bottom: 0.5px solid var(--border); flex-shrink: 0; }
+.snav-title { font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 300; letter-spacing: 0.22em; text-transform: uppercase; color: var(--orange); }
+.snav-close-btn { font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 300; letter-spacing: 0.1em; color: var(--muted); cursor: pointer; background: none; border: none; transition: color 0.2s; }
+.snav-close-btn:hover { color: var(--ink); }
+.snav-body { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+.snav-col-sec { width: 220px; flex-shrink: 0; border-right: 0.5px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
+.snav-col-sec::-webkit-scrollbar { width: 0; }
+.snav-sec-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; cursor: pointer; border-bottom: 0.5px solid var(--border); transition: background 0.15s; flex-shrink: 0; user-select: none; }
+.snav-sec-item:last-child { border-bottom: none; }
+.snav-sec-item:hover { background: var(--bg2); }
+.snav-sec-item.sel { background: var(--bg2); }
+.snav-sec-item.sel .snav-sec-name { color: var(--orange); }
+.snav-sec-name { font-family: 'Satoshi', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: -0.01em; color: var(--ink); transition: color 0.2s; line-height: 1.2; }
+.snav-sec-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.snav-sec-count { font-family: 'DM Mono', monospace; font-size: 7px; font-weight: 300; letter-spacing: 0.1em; color: var(--muted); }
+.snav-sec-arrow { font-size: 10px; color: var(--muted); transition: transform 0.28s cubic-bezier(0.32,0.72,0,1), color 0.2s; display: inline-block; }
+.snav-sec-item.sel .snav-sec-arrow { transform: rotate(180deg); color: var(--orange); }
+.snav-foot { padding: 10px 14px; border-top: 0.5px solid var(--border); flex-shrink: 0; }
+.snav-home { font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 300; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); cursor: pointer; transition: color 0.2s; }
+.snav-home:hover { color: var(--orange); }
+.snav-col-proj { width: 220px; flex-shrink: 0; display: flex; flex-direction: column; overflow: hidden; }
+.snav-proj-head { padding: 9px 14px 7px; border-bottom: 0.5px solid var(--border); flex-shrink: 0; }
+.snav-proj-disc-name { font-family: 'Satoshi', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: -0.01em; color: var(--ink); transition: color 0.4s; line-height: 1.2; }
+.snav-proj-disc-name .or { color: var(--orange); }
+.snav-proj-count { font-family: 'DM Mono', monospace; font-size: 7px; font-weight: 300; letter-spacing: 0.12em; color: var(--muted); margin-top: 2px; }
+.snav-proj-scroll { flex: 1; overflow-y: auto; }
+.snav-proj-scroll::-webkit-scrollbar { width: 0; }
+.snav-proj-item { padding: 8px 14px; border-bottom: 0.5px solid var(--border); cursor: pointer; transition: background 0.15s; user-select: none; }
+.snav-proj-item:last-child { border-bottom: none; }
+.snav-proj-item:hover { background: var(--bg2); }
+.snav-proj-item:hover .snav-proj-name { color: var(--orange); }
+.snav-proj-name { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 300; letter-spacing: 0.04em; color: var(--ink); transition: color 0.2s; line-height: 1.4; }
+.snav-proj-tags { display: flex; gap: 3px; margin-top: 3px; flex-wrap: wrap; }
+.spt { font-family: 'DM Mono', monospace; font-size: 6px; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; padding: 1px 4px; border-radius: 1px; }
+.spt.hero { background: var(--orange); color: #fff; }
+.spt.linked { color: var(--muted); border: 0.5px solid var(--border); }
+.spt.wip { color: var(--orange); border: 0.5px solid rgba(232,93,0,0.4); }
+.spt.free { color: var(--slate); border: 0.5px solid var(--slate); }
+[data-theme="dark"] .spt.free { color: #8AB4C8; border-color: #8AB4C8; }
+
+/* CONTENT COLUMNS */
+.content-area { margin-top: 52px; overflow: hidden; height: calc(100vh - 52px); }
+.cols-track { display: flex; height: 100%; transition: transform var(--col-transition) cubic-bezier(0.32,0.72,0,1); }
+.disc-col { flex-shrink: 0; width: 100%; height: 100%; overflow-y: auto; padding: 56px 28px 48px 48px; }
+.disc-col::-webkit-scrollbar { width: 3px; }
+.disc-col::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* DISC HEADER */
+.disc-h { margin-bottom: 20px; }
+.disc-h-title { font-family: 'Satoshi', sans-serif; font-weight: 700; font-size: clamp(26px,3.5vw,44px); letter-spacing: -0.025em; text-transform: uppercase; color: var(--ink); line-height: 1; transition: color 0.4s; }
+.disc-h-title .or { color: var(--orange); }
+.disc-h-meta { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+.disc-h-count { font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 300; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.disc-h-rule { flex: 1; max-width: 140px; height: 0.5px; background: var(--border); }
+
+/* PROJECT ROWS */
+.proj-list { display: flex; flex-direction: column; gap: 2px; }
+.proj-row { border: 0.5px solid var(--border); border-radius: 2px; overflow: hidden; cursor: pointer; transition: border-color 0.2s; }
+.proj-row:hover { border-color: rgba(232,93,0,0.4); }
+.proj-row.hero-r { border-color: rgba(232,93,0,0.25); }
+.proj-row.linked-r { border-style: dashed; opacity: 0.7; }
+.proj-row.open { border-color: var(--orange); }
+.proj-top { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: var(--bg); transition: background 0.2s; gap: 10px; }
+.proj-row:hover .proj-top, .proj-row.open .proj-top { background: var(--bg2); }
+.proj-tl { display: flex; align-items: baseline; gap: 10px; flex: 1; min-width: 0; }
+.proj-name { font-family: 'Satoshi', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: -0.01em; color: var(--ink); transition: color 0.4s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.proj-tagrow { display: flex; gap: 3px; flex-wrap: nowrap; flex-shrink: 0; }
+.pt { font-family: 'DM Mono', monospace; font-size: 6px; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 5px; border-radius: 1px; white-space: nowrap; }
+.pt.hero { background: var(--orange); color: #fff; }
+.pt.linked { color: var(--muted); border: 0.5px solid var(--border); }
+.pt.freelance { color: var(--slate); border: 0.5px solid var(--slate); }
+.pt.wip { color: var(--orange); border: 0.5px solid rgba(232,93,0,0.4); }
+.pt.draw { color: var(--green); border: 0.5px solid var(--green); }
+.pt.res { color: var(--warm); border: 0.5px solid var(--warm); }
+.pt.gr { color: var(--violet); border: 0.5px solid var(--violet); }
+[data-theme="dark"] .pt.freelance { color: #8AB4C8; border-color: #8AB4C8; }
+[data-theme="dark"] .pt.draw { color: #7AB898; border-color: #7AB898; }
+[data-theme="dark"] .pt.res { color: #C4967A; border-color: #C4967A; }
+[data-theme="dark"] .pt.gr { color: #9B90BE; border-color: #9B90BE; }
+.proj-tr { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.proj-year { font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 300; letter-spacing: 0.1em; color: var(--muted); }
+.proj-chev { font-size: 9px; color: var(--muted); transition: transform 0.28s, color 0.2s; }
+.proj-row.open .proj-chev { transform: rotate(180deg); color: var(--orange); }
+.proj-body { display: none; border-top: 0.5px solid var(--border); }
+.proj-row.open .proj-body { display: grid; grid-template-columns: 1fr 220px; }
+.proj-imgs { padding: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+.proj-img { aspect-ratio: 4/3; border-radius: 2px; display: flex; align-items: flex-end; padding: 5px; overflow: hidden; }
+.proj-img.wide { grid-column: span 2; aspect-ratio: 16/9; }
+.proj-img-lbl { font-family: 'DM Mono', monospace; font-size: 6px; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.3); }
+.proj-info { padding: 14px 12px; border-left: 0.5px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+.proj-info-cat { font-family: 'DM Mono', monospace; font-size: 7px; font-weight: 300; letter-spacing: 0.18em; text-transform: uppercase; color: var(--orange); }
+.proj-info-title { font-family: 'Satoshi', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: -0.01em; color: var(--ink); line-height: 1.2; transition: color 0.4s; }
+.proj-info-desc { font-size: 11px; line-height: 1.75; color: var(--muted); }
+.proj-info-tags { display: flex; gap: 3px; flex-wrap: wrap; }
+.proj-actions { display: flex; gap: 5px; margin-top: auto; flex-wrap: wrap; }
+.pbtn { font-family: 'DM Mono', monospace; font-size: 7px; font-weight: 300; letter-spacing: 0.12em; text-transform: uppercase; padding: 6px 10px; border-radius: 2px; cursor: pointer; transition: all 0.18s; }
+.pbtn-out { background: transparent; border: 0.5px solid var(--border); color: var(--muted); }
+.pbtn-out:hover { border-color: var(--ink); color: var(--ink); }
+.pbtn-pri { background: var(--orange); border: 0.5px solid var(--orange); color: #fff; }
+.pbtn-pri:hover { opacity: 0.88; }
+
+/* PLACEHOLDER COLOURS */
+.c1{background:#2E4A5E;} .c2{background:#1E3A2E;} .c3{background:#4A2818;}
+.c4{background:#2A1E40;} .c5{background:#1A2E28;} .c6{background:#3A2A1A;}
+.c7{background:#18283A;} .c8{background:#2A180E;} .c9{background:#382A4A;}
+.c10{background:#1C2C1A;}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+
+<div class="side-dot" id="side-dot">
+  <div class="sd-line"></div><div class="sd-dot"></div>
+  <div class="sd-lbl">Nav</div><div class="sd-line"></div>
+</div>
+
+<div class="snav-bd" id="snav-bd"></div>
+<div class="snav" id="snav">
+  <div class="snav-header">
+    <span class="snav-title">Archive</span>
+    <button class="snav-close-btn" id="snav-close">× Close</button>
+  </div>
+  <div class="snav-body">
+    <div class="snav-col-sec" id="snav-col-sec">
+      <div id="snav-sec-list"></div>
+      <div class="snav-foot"><span class="snav-home" onclick="window.location.href='index.html'">← Homepage</span></div>
+    </div>
+    <div class="snav-col-proj" id="snav-col-proj">
+      <div class="snav-proj-head">
+        <div class="snav-proj-disc-name" id="snav-proj-disc"></div>
+        <div class="snav-proj-count" id="snav-proj-count"></div>
+      </div>
+      <div class="snav-proj-scroll" id="snav-proj-scroll"></div>
+    </div>
+  </div>
+</div>
+
+<nav class="top-nav">
+  <div class="nav-mark">
+    <span class="nav-griff">Griff</span>
+    <span class="nav-drury">Drury</span>
+    <span class="nav-welsh">Gruffudd Drury</span>
+  </div>
+  <div class="nav-center">
+    <div class="toggle-wrap" id="tog">
+      <span class="tl">Light</span>
+      <div class="track" id="track"><div class="thumb"></div></div>
+      <span class="tl">Dark</span>
+    </div>
+  </div>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><span onclick="window.location.href='index.html'">← Home</span></li>
+      <li><span onclick="window.location.href='about.html'">About</span></li>
+      <li><span onclick="window.location.href='contact.html'">Contact</span></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="disc-bar">
+  <div class="disc-bar-inner" id="disc-bar-inner"></div>
+</div>
+<div class="disc-arrows">
+  <span class="disc-arrow" onclick="prev()">←</span>
+  <span class="disc-arrow" onclick="nxt()">→</span>
+</div>
+
+<div class="content-area">
+  <div class="cols-track" id="cols-track"></div>
+</div>
+
+<script>
+/* ── DATA — single source of truth ── */
+const DISCS = [
+  { id:'graphic',  label:'Graphic & Brand',      visible:true  },
+  { id:'ux',       label:'UX & Digital',          visible:true  },
+  { id:'material', label:'Material & Object',     visible:true  },
+  { id:'research', label:'Research & Writing',    visible:true  },
+  { id:'drawing',  label:'Drawing Practice',      visible:true  },
+  { id:'spatial',  label:'Spatial & Architecture',visible:false },
+];
+
+const PROJ = {
+  graphic:[
+    {id:'escape',   title:"Escape — The Londoner's Underground", year:'2023', tags:[{t:'Hero',c:'hero'}],                         desc:'Redesigning the London Underground map to reveal hidden pathways and shortcuts.',         imgs:['c1','c1','c1','c1'], hero:true},
+    {id:'realrelief',title:'Real Relief — Safepad',              year:'2023', tags:[{t:'Freelance',c:'freelance'}],               desc:'Packaging design for a Danish social enterprise. Full brand system across three variants.',imgs:['c3','c3','c3']},
+    {id:'core',     title:'Core — Logo & Brand Strategy',        year:'2024', tags:[{t:'Freelance',c:'freelance'},{t:'Ongoing',c:'wip'}], desc:'Logo design and brand strategy for Core, a compliance and architecture firm.',         imgs:['c9','c9']},
+    {id:'honey',    title:'Honey Labels',                        year:'2023', tags:[{t:'Freelance',c:'freelance'}],               desc:'Label design for a small honey producer.',                                                imgs:['c6','c6']},
+    {id:'posters',  title:'Graphic Poster Series',               year:'2022–24',tags:[{t:'Graphic',c:'gr'}],                     desc:'An ongoing series of graphic posters exploring typographic composition and visual language.',imgs:['c4','c4','c4']},
+    {id:'yoke-link',title:'Yoke — All About Eggs ↗',             year:'2022', tags:[{t:'↗ Research',c:'linked'}],                desc:'Editorial zine — lives in Research & Writing.',                                           imgs:['c2','c2'], linked:true},
+    {id:'sky-link', title:'4 the Love of Skydiving ↗',           year:'2022', tags:[{t:'↗ Research',c:'linked'}],                desc:'Research zine — lives in Research & Writing.',                                            imgs:['c7','c7'], linked:true},
+  ],
+  ux:[
+    {id:'website',  title:'gruffdrury.website',   year:'2024–25',tags:[{t:'In Progress',c:'wip'}],                               desc:'Designing and building this portfolio from scratch — a live UX and front-end case study.',imgs:['c4','c4']},
+    {id:'app-a',    title:'App Design A',          year:'2025',   tags:[{t:'In Progress',c:'wip'}],                               desc:'Mobile application design — coming soon.',                                                imgs:['c9','c9']},
+    {id:'app-b',    title:'App Design B',          year:'2025',   tags:[{t:'In Progress',c:'wip'}],                               desc:'Mobile application design — coming soon.',                                                imgs:['c5','c5']},
+  ],
+  material:[
+    {id:'ripe',     title:'Ripe for Revival',      year:'2023',   tags:[{t:'Hero',c:'hero'},{t:'Degree Show 2023',c:'res'}],      desc:'Vegan compostable biomaterial from household food by-products. Banana skin formed into coat hooks, lamp shades, bench legs. Goldsmiths Design Degree Show 2023.', imgs:['c3','c6','c3','c6'], hero:true},
+    {id:'bbcube',   title:'BBcube — Portable BBQ', year:'2024–25',tags:[{t:'Hero',c:'hero'},{t:'In Progress',c:'wip'}],           desc:'Portable sustainable BBQ — green industrial design combining quality materials and a defence of traditional charcoal cooking.', imgs:['c8','c8'], hero:true},
+  ],
+  research:[
+    {id:'yoke',         title:'Yoke — All About Eggs',             year:'2022', tags:[{t:'Zine · 31pp',c:'gr'},{t:'+ Graphic',c:'gr'}],  desc:'31-page editorial zine. Philosophy, design, food culture — all about eggs.',                imgs:['c2','c2','c2']},
+    {id:'skydiving',    title:'4 the Love of Skydiving',           year:'2022', tags:[{t:'Zine',c:'gr'},{t:'+ Graphic',c:'gr'}],          desc:'Research zine about skydiving. Empathy-driven design research through interviews and editorial design.', imgs:['c7','c7','c7']},
+    {id:'pollinators',  title:'The Plight of Our Pollinators',     year:'2022', tags:[{t:'Research',c:'res'},{t:'+ Drawing',c:'draw'}],    desc:'Research and awareness project on bee decline. Output primarily in drawings — bee studies in coloured pencil and ink.', imgs:['c5','c5','c5']},
+    {id:'ripe-link',    title:'Ripe for Revival ↗',                year:'2023', tags:[{t:'↗ Material',c:'linked'}],                       desc:'Biomaterial project — lives in Material & Object.',                                       imgs:['c3','c3'], linked:true},
+    {id:'ethno',        title:'Speculative Ethnographic Report',   year:'2023', tags:[{t:'Speculative',c:'res'}],                         desc:'Speculative ethnographic report on environmental extreme potential futures.',               imgs:['c10','c10']},
+    {id:'construction', title:'The Construction Reconstruction',   year:'2023', tags:[{t:'Essay',c:'res'}],                               desc:'An essay on the potentials of green housing design and environmental impact.',              imgs:['c9','c9']},
+    {id:'waste',        title:'Waste Not, Want Not',               year:'2022', tags:[{t:'Essay',c:'res'}],                               desc:'Observing global relationships with waste and materiality in the context of poverty.',      imgs:['c6','c6']},
+    {id:'everyday',     title:'Observing the Everyday',           year:'2021', tags:[{t:'Essay',c:'res'}],                               desc:'500-word personal narrative — the role of design in everyday practice.',                   imgs:['c4','c4']},
+    {id:'collection',   title:'Questioning the Collection',        year:'2021', tags:[{t:'Essay',c:'res'}],                               desc:'500-word examination of display formats and issues of curation.',                         imgs:['c8','c8']},
+  ],
+  drawing:[
+    {id:'bees-link', title:'Pollinators — Bee Drawings ↗',         year:'2022', tags:[{t:'↗ Research',c:'linked'}],                desc:'Bee study drawings — lives in Research & Writing.',                                       imgs:['c5','c5'], linked:true},
+    {id:'arch',      title:'Architecture Sketches',                year:'2021–24',tags:[{t:'Hand Drawing',c:'draw'}],              desc:'Spatial studies, structural observations, and building explorations done by hand.',         imgs:['c1','c1','c1']},
+    {id:'figure',    title:'Human Figure Series',                  year:'2021–24',tags:[{t:'Hand Drawing',c:'draw'}],              desc:'Life drawing and figure studies. Ongoing practice.',                                      imgs:['c6','c6','c6']},
+    {id:'illus',     title:'Graphic Illustration Series',          year:'2021–24',tags:[{t:'Hand Drawing',c:'draw'},{t:'Graphic',c:'gr'}], desc:'Illustration and hand-drawn graphic work in varied styles.',                     imgs:['c9','c9','c9']},
+    {id:'algae',     title:'Micro Algae Facemask — Technical Drawings', year:'2022', tags:[{t:'Speculative',c:'res'},{t:'Technical',c:'draw'}], desc:'Hand-drawn speculative technical drawings for a micro algae facemask.', imgs:['c10','c10','c10']},
+  ],
+};
+
+/* ── STATE ── */
+const vis = DISCS.filter(d => d.visible);
+const COL_MS = 550;
+let cur = 0;
+let isTransitioning = false;
+let sweepTimer = null;
+let selectedSec = null;
+let secClickTimer = null;
+
+/* ── INIT ── */
+function init() {
+  buildDiscBar();
+  buildColumns();
+  buildSecList();
+  attachProjListeners();
+  // check URL param for direct section link
+  const params = new URLSearchParams(window.location.search);
+  const discParam = params.get('disc');
+  if (discParam) {
+    const idx = vis.findIndex(d => d.id === discParam);
+    if (idx > -1) {
+      cur = idx;
+      document.getElementById('cols-track').style.transform = `translateX(-${idx * 100}%)`;
+      // update disc bar after build
+      setTimeout(() => {
+        document.querySelectorAll('.disc-item').forEach((el, i) => el.classList.toggle('active', i === idx));
+      }, 50);
+    }
+  }
+  // cursor
+  const c = document.getElementById('cur');
+  document.addEventListener('mousemove', e => { c.style.left = e.clientX + 'px'; c.style.top = e.clientY + 'px'; });
+  document.querySelectorAll('a, button, .proj-row, .disc-item, .snav-sec-item, .snav-proj-item, .toggle-wrap, .side-dot, .disc-arrow').forEach(el => {
+    el.addEventListener('mouseenter', () => c.classList.add('big'));
+    el.addEventListener('mouseleave', () => c.classList.remove('big'));
+  });
+}
+
+/* ── DISC BAR ── */
+function buildDiscBar() {
+  const inner = document.getElementById('disc-bar-inner');
+  inner.innerHTML = '';
+  vis.forEach((d, i) => {
+    if (i > 0) { const sp = document.createElement('div'); sp.className = 'disc-spacer'; inner.appendChild(sp); }
+    const wrap = document.createElement('span');
+    wrap.className = 'disc-item' + (i === 0 ? ' active' : '');
+    wrap.dataset.idx = i;
+    wrap.innerHTML = `<span class="base">${d.label}</span><span class="fill">${d.label}</span>`;
+    wrap.addEventListener('click', () => goTo(i));
+    inner.appendChild(wrap);
+  });
+}
+
+/* ── COLUMNS ── */
+function buildColumns() {
+  const ct = document.getElementById('cols-track');
+  ct.innerHTML = vis.map(d => {
+    const projs = PROJ[d.id] || [];
+    const titleHtml = d.label.replace(' & ', ' <span class="or">&</span> ');
+    return `<div class="disc-col" style="flex-shrink:0;width:100%;">
+      <div class="disc-h">
+        <div class="disc-h-title">${titleHtml}</div>
+        <div class="disc-h-meta">
+          <span class="disc-h-count">${projs.length} ${projs.length === 1 ? 'entry' : 'entries'}</span>
+          <div class="disc-h-rule"></div>
+        </div>
+      </div>
+      <div class="proj-list">${projs.map(p => projHTML(p)).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+function projHTML(p) {
+  const tags = (p.tags || []).map(t => `<span class="pt ${t.c}">${t.t}</span>`).join('');
+  const imgs = (p.imgs || []).slice(0, 4).map((c, i) =>
+    `<div class="proj-img ${c}${i === 0 ? ' wide' : ''}"><span class="proj-img-lbl">Image ${i+1}</span></div>`
+  ).join('');
+  return `<div class="proj-row${p.hero ? ' hero-r' : ''}${p.linked ? ' linked-r' : ''}">
+    <div class="proj-top">
+      <div class="proj-tl"><span class="proj-name">${p.title}</span><div class="proj-tagrow">${tags}</div></div>
+      <div class="proj-tr"><span class="proj-year">${p.year}</span><span class="proj-chev">▾</span></div>
+    </div>
+    <div class="proj-body">
+      <div class="proj-imgs">${imgs}</div>
+      <div class="proj-info">
+        <span class="proj-info-cat">${p.tags && p.tags[0] ? p.tags[0].t : ''}</span>
+        <span class="proj-info-title">${p.title}</span>
+        <p class="proj-info-desc">${p.desc}</p>
+        <div class="proj-info-tags">${tags}</div>
+        <div class="proj-actions">
+          <button class="pbtn pbtn-out">Close</button>
+          <button class="pbtn pbtn-pri">Full project →</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function attachProjListeners() {
+  document.querySelectorAll('.proj-row').forEach(r => {
+    r.addEventListener('click', e => {
+      if (e.target.classList.contains('pbtn-out')) { r.classList.remove('open'); return; }
+      if (e.target.classList.contains('pbtn-pri')) { return; }
+      const wasOpen = r.classList.contains('open');
+      r.closest('.proj-list').querySelectorAll('.proj-row.open').forEach(x => x.classList.remove('open'));
+      if (!wasOpen) r.classList.add('open');
+    });
+  });
+}
+
+/* ── SIDE NAV ── */
+function buildSecList() {
+  document.getElementById('snav-sec-list').innerHTML = vis.map((d, i) => {
+    const count = (PROJ[d.id] || []).length;
+    const isSel = selectedSec === i;
+    return `<div class="snav-sec-item${isSel ? ' sel' : ''}" onclick="handleSecClick(event,${i})" ondblclick="handleSecDbl(${i})">
+      <span class="snav-sec-name">${d.label}</span>
+      <div class="snav-sec-right"><span class="snav-sec-count">${count}</span><span class="snav-sec-arrow">›</span></div>
+    </div>`;
+  }).join('');
+}
+
+function handleSecClick(e, i) {
+  if (secClickTimer) { clearTimeout(secClickTimer); secClickTimer = null; }
+  secClickTimer = setTimeout(() => {
+    secClickTimer = null;
+    if (selectedSec === i) { collapseProjects(); } else { selectSection(i); }
+  }, 220);
+}
+
+function handleSecDbl(i) {
+  if (secClickTimer) { clearTimeout(secClickTimer); secClickTimer = null; }
+  goTo(i); closeSNav();
+}
+
+function selectSection(i) {
+  selectedSec = i;
+  const d = vis[i];
+  const projs = PROJ[d.id] || [];
+  buildSecList();
+  const titleHtml = d.label.replace(' & ', ' <span class="or">&</span> ');
+  document.getElementById('snav-proj-disc').innerHTML = titleHtml;
+  document.getElementById('snav-proj-count').textContent = `${projs.length} ${projs.length === 1 ? 'entry' : 'entries'}`;
+  document.getElementById('snav-proj-scroll').innerHTML = projs.map((p, pi) => {
+    const heroTag = p.hero ? '<span class="spt hero">Hero</span>' : '';
+    const linkedTag = p.linked ? '<span class="spt linked">Linked</span>' : '';
+    const wipTag = (p.tags || []).find(t => t.c === 'wip') ? '<span class="spt wip">In Progress</span>' : '';
+    const freeTag = (p.tags || []).find(t => t.c === 'freelance') ? '<span class="spt free">Freelance</span>' : '';
+    return `<div class="snav-proj-item" onclick="openProject(${i},${pi})">
+      <div class="snav-proj-name">${p.title}</div>
+      <div class="snav-proj-tags">${heroTag}${linkedTag}${wipTag}${freeTag}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('snav').classList.add('expanded');
+}
+
+function collapseProjects() {
+  selectedSec = null;
+  buildSecList();
+  document.getElementById('snav').classList.remove('expanded');
+  document.getElementById('snav-proj-scroll').innerHTML = '';
+  document.getElementById('snav-proj-disc').innerHTML = '';
+  document.getElementById('snav-proj-count').textContent = '';
+}
+
+function openProject(discIdx, projIdx) {
+  const needsTransition = discIdx !== cur;
+  closeSNav();
+  if (needsTransition) {
+    goTo(discIdx);
+    setTimeout(() => _openRow(discIdx, projIdx), COL_MS + 60);
+  } else {
+    setTimeout(() => _openRow(discIdx, projIdx), 420);
+  }
+}
+
+function _openRow(discIdx, projIdx) {
+  const allCols = document.querySelectorAll('.disc-col');
+  const col = allCols[discIdx];
+  if (!col) return;
+  const rows = col.querySelectorAll('.proj-row');
+  if (!rows[projIdx]) return;
+  document.querySelectorAll('.proj-row.open').forEach(r => r.classList.remove('open'));
+  rows[projIdx].classList.add('open');
+  const colTop = col.getBoundingClientRect().top;
+  const rowTop = rows[projIdx].getBoundingClientRect().top;
+  const offset = rowTop - colTop + col.scrollTop - 80;
+  col.scrollTo({ top: offset, behavior: 'smooth' });
+}
+
+/* ── NAVIGATION ── */
+function goTo(target) {
+  if (target === cur || isTransitioning) return;
+  const prev_ = cur; cur = target;
+  isTransitioning = true;
+  const items = document.querySelectorAll('.disc-item');
+  const step = target > prev_ ? 1 : -1;
+  const steps = [];
+  for (let i = prev_ + step; i !== target; i += step) steps.push(i);
+  steps.push(target);
+  if (sweepTimer) { clearTimeout(sweepTimer); sweepTimer = null; }
+  steps.forEach((idx, n) => {
+    sweepTimer = setTimeout(() => {
+      items.forEach((el, ei) => el.classList.toggle('active', ei === idx));
+      if (idx === target) {
+        document.getElementById('cols-track').style.transform = `translateX(-${target * 100}%)`;
+        setTimeout(() => { isTransitioning = false; }, COL_MS);
+      }
+    }, n * 120);
+  });
+}
+function prev() { if (cur > 0 && !isTransitioning) goTo(cur - 1); }
+function nxt()  { if (cur < vis.length - 1 && !isTransitioning) goTo(cur + 1); }
+
+function openSNav()  {
+  collapseProjects();
+  document.getElementById('snav').classList.add('open');
+  document.getElementById('snav-bd').classList.add('open');
+}
+function closeSNav() {
+  document.getElementById('snav').classList.remove('open', 'expanded');
+  document.getElementById('snav-bd').classList.remove('open');
+  setTimeout(() => { selectedSec = null; buildSecList(); }, 400);
+}
+
+document.getElementById('side-dot').addEventListener('click', openSNav);
+document.getElementById('snav-close').addEventListener('click', closeSNav);
+document.getElementById('snav-bd').addEventListener('click', e => { if (e.target === document.getElementById('snav-bd')) closeSNav(); });
+
+/* ── THEME ── */
+document.getElementById('tog').addEventListener('click', () => {
+  const d = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', d ? '' : 'dark');
+  document.getElementById('track').classList.toggle('on', !d);
+});
+
+/* ── KEYBOARD ── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') nxt();
+  if (e.key === 'ArrowLeft') prev();
+  if (e.key === 'Escape') closeSNav();
+});
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Griff Drury — Designer & Maker</title>
+<meta name="description" content="Gruffudd Drury — Designer and maker working across brand, UX, spatial design, and physical craft. Based in the UK.">
+<link rel="stylesheet" href="css/main.css">
+<style>
+/* ── HOMEPAGE SPECIFIC ── */
+
+/* HERO */
+.hero { min-height: 100vh; padding: 72px 28px 0; display: flex; flex-direction: column; }
+.hero-top { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-top: 8px; }
+.eyebrow { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 300; letter-spacing: 0.26em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; margin-bottom: 14px; opacity: 0; animation: up 0.7s cubic-bezier(0.22,1,0.36,1) 0.1s forwards; }
+.eyebrow::before { content: ''; width: 20px; height: 0.5px; background: var(--border); flex-shrink: 0; }
+.hero-name { opacity: 0; animation: up 0.8s cubic-bezier(0.22,1,0.36,1) 0.2s forwards; }
+.hero-griff { font-family: 'Satoshi', sans-serif; font-weight: 700; font-style: italic; font-size: clamp(42px, 7.5vw, 76px); letter-spacing: -0.025em; color: var(--orange); line-height: 1; display: block; }
+.hero-drury { font-family: 'Satoshi', sans-serif; font-weight: 700; font-size: clamp(58px, 12vw, 124px); letter-spacing: -0.03em; text-transform: uppercase; color: var(--ink); line-height: 0.87; display: block; transition: color 0.4s; }
+.hero-welsh { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 300; letter-spacing: 0.14em; color: var(--muted); margin-top: 9px; display: block; transition: color 0.4s; }
+.rotator-wrap { margin-top: 18px; opacity: 0; animation: up 0.7s cubic-bezier(0.22,1,0.36,1) 0.35s forwards; }
+.rotator { position: relative; height: 200px; border-radius: 3px; overflow: hidden; background: var(--bg2); }
+.rot-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.9s cubic-bezier(0.4,0,0.2,1); display: flex; align-items: center; justify-content: center; }
+.rot-slide.active { opacity: 1; }
+.rot-tag { position: absolute; top: 11px; left: 12px; font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 300; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.6); background: rgba(0,0,0,0.3); padding: 4px 9px; border-radius: 2px; }
+.rot-inner { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.22); }
+.rot-dots { display: flex; gap: 5px; justify-content: center; margin-top: 7px; }
+.rot-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border); cursor: pointer; transition: background 0.2s, transform 0.2s; border: 0.5px solid var(--border2); }
+.rot-dot.on { background: var(--orange); transform: scale(1.2); }
+.hero-bottom { display: flex; align-items: center; justify-content: space-between; padding: 14px 0 18px; border-top: 0.5px solid var(--border); margin-top: 14px; opacity: 0; animation: up 0.7s cubic-bezier(0.22,1,0.36,1) 0.5s forwards; }
+.pills { display: flex; gap: 5px; flex-wrap: wrap; }
+.pill { border: 0.5px solid var(--border); border-radius: 2px; padding: 5px 11px; font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 300; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); cursor: pointer; transition: all 0.18s; background: transparent; }
+.pill:hover, .pill.active { background: var(--orange); color: #fff; border-color: var(--orange); }
+.scroll-cue { display: flex; align-items: center; gap: 7px; font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); flex-shrink: 0; }
+.scroll-arr { animation: bob 2s ease-in-out infinite; }
+
+/* WORK SECTION */
+.section { padding: 52px 28px; border-top: 0.5px solid var(--border); }
+.sec-hdr { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 26px; }
+.sec-title { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 300; letter-spacing: 0.26em; text-transform: uppercase; color: var(--muted); }
+.sec-action { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 300; letter-spacing: 0.16em; text-transform: uppercase; color: var(--orange); cursor: pointer; background: none; border: none; }
+.work-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; }
+.wcard { position: relative; overflow: hidden; cursor: pointer; border-radius: 2px; }
+.wcard:nth-child(1) { grid-column: span 7; aspect-ratio: 16/10; }
+.wcard:nth-child(2) { grid-column: span 5; aspect-ratio: 16/10; }
+.wcard:nth-child(3) { grid-column: span 4; aspect-ratio: 4/5; }
+.wcard:nth-child(4) { grid-column: span 5; aspect-ratio: 4/5; }
+.wcard:nth-child(5) { grid-column: span 3; aspect-ratio: 4/5; }
+.card-bg { position: absolute; inset: 0; transition: transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94); }
+.wcard:hover .card-bg { transform: scale(1.05); }
+.card-ov { position: absolute; inset: 0; background: linear-gradient(to top, rgba(14,13,12,0.88) 0%, rgba(14,13,12,0) 55%); opacity: 0; transition: opacity 0.3s; display: flex; flex-direction: column; justify-content: flex-end; padding: 16px; }
+.wcard:hover .card-ov { opacity: 1; }
+.card-cat { font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 300; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 3px; }
+.card-title { font-family: 'Satoshi', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: -0.01em; color: #fff; line-height: 1.15; }
+.card-hint { position: absolute; top: 12px; right: 12px; font-family: 'DM Mono', monospace; font-size: 7px; font-weight: 300; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.4); opacity: 0; transition: opacity 0.3s; }
+.wcard:hover .card-hint { opacity: 1; }
+
+/* ABOUT SECTION */
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; align-items: start; }
+.about-h { font-family: 'Satoshi', sans-serif; font-weight: 700; font-size: clamp(26px,3.5vw,40px); letter-spacing: -0.025em; text-transform: uppercase; color: var(--ink); line-height: 0.95; margin-bottom: 18px; transition: color 0.4s; }
+.about-h .or { color: var(--orange); }
+.about-body { font-size: 12px; line-height: 1.85; color: var(--muted); margin-bottom: 22px; transition: color 0.4s; }
+.about-cta { display: inline-flex; align-items: center; gap: 10px; font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink); cursor: pointer; padding-bottom: 4px; border-bottom: 0.5px solid var(--ink); transition: gap 0.2s, color 0.4s, border-color 0.4s; text-decoration: none; background: none; border-top: none; border-left: none; border-right: none; }
+.about-cta:hover { gap: 18px; color: var(--orange); border-bottom-color: var(--orange); }
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; border: 0.5px solid var(--border); border-radius: 3px; overflow: hidden; }
+.stat { padding: 18px 16px; border-right: 0.5px solid var(--border); border-bottom: 0.5px solid var(--border); }
+.stat:nth-child(even) { border-right: none; }
+.stat:nth-child(3), .stat:nth-child(4) { border-bottom: none; }
+.stat-num { font-family: 'Satoshi', sans-serif; font-weight: 700; font-size: 28px; letter-spacing: -0.03em; color: var(--ink); line-height: 1; transition: color 0.4s; }
+.stat-num .or { color: var(--orange); }
+.stat-lbl { font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 300; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
+
+/* FOOTER */
+footer { padding: 20px 28px; border-top: 0.5px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.foot-url { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 300; letter-spacing: 0.14em; color: var(--muted); }
+.foot-cta { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 300; letter-spacing: 0.18em; text-transform: uppercase; color: var(--orange); cursor: pointer; background: none; border: none; transition: letter-spacing 0.2s; }
+.foot-cta:hover { letter-spacing: 0.26em; }
+
+/* LIGHTBOX */
+.lb { position: fixed; inset: 0; z-index: 600; pointer-events: none; display: flex; align-items: center; justify-content: center; }
+.lb-backdrop { position: absolute; inset: 0; background: rgba(14,13,12,0); transition: background 0.35s; }
+.lb-box { position: relative; width: min(680px, 92vw); max-height: 88vh; background: var(--bg); border-radius: 4px; border: 0.5px solid var(--border); transform: translateY(16px) scale(0.97); opacity: 0; transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.4s, background 0.4s; overflow: hidden; display: flex; flex-direction: column; }
+.lb.open { pointer-events: all; }
+.lb.open .lb-backdrop { background: rgba(14,13,12,0.72); }
+.lb.open .lb-box { transform: translateY(0) scale(1); opacity: 1; }
+.lb-img-wrap { position: relative; height: 320px; background: var(--bg2); overflow: hidden; flex-shrink: 0; }
+.lb-slides { display: flex; height: 100%; transition: transform 0.45s cubic-bezier(0.32,0.72,0,1); }
+.lb-slide { min-width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.lb-slide-inner { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.22); }
+.lb-prev, .lb-next { position: absolute; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; border-radius: 50%; background: rgba(14,13,12,0.4); border: 0.5px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,0.8); font-size: 14px; transition: background 0.2s; z-index: 2; user-select: none; }
+.lb-prev { left: 12px; } .lb-next { right: 12px; }
+.lb-prev:hover, .lb-next:hover { background: rgba(14,13,12,0.7); }
+.lb-counter { position: absolute; bottom: 10px; right: 12px; font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 300; letter-spacing: 0.14em; color: rgba(255,255,255,0.4); }
+.lb-info { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 10px; }
+.lb-tag { font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase; color: var(--orange); }
+.lb-title { font-family: 'Satoshi', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.02em; color: var(--ink); transition: color 0.4s; }
+.lb-year { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 300; letter-spacing: 0.14em; color: var(--muted); }
+.lb-desc { font-size: 12px; line-height: 1.7; color: var(--muted); transition: color 0.4s; }
+.lb-actions { display: flex; gap: 8px; margin-top: 4px; }
+.lb-btn { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 300; letter-spacing: 0.16em; text-transform: uppercase; padding: 8px 14px; border-radius: 2px; cursor: pointer; transition: all 0.18s; }
+.lb-btn-outline { background: transparent; border: 0.5px solid var(--border); color: var(--muted); }
+.lb-btn-outline:hover { border-color: var(--ink); color: var(--ink); }
+.lb-btn-primary { background: var(--orange); border: 0.5px solid var(--orange); color: #fff; }
+.lb-btn-primary:hover { opacity: 0.88; }
+.lb-close { position: absolute; top: 10px; right: 10px; width: 28px; height: 28px; border-radius: 50%; background: rgba(14,13,12,0.35); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,0.7); font-size: 14px; z-index: 3; transition: background 0.2s; }
+.lb-close:hover { background: rgba(14,13,12,0.6); }
+.lb-dbl-hint { position: absolute; bottom: 10px; left: 12px; font-family: 'DM Mono', monospace; font-size: 7px; font-weight: 300; letter-spacing: 0.12em; color: rgba(255,255,255,0.3); }
+
+/* PLACEHOLDER CARD COLOURS */
+.c1{background:#2E4A5E;} .c2{background:#2A5C3F;} .c3{background:#6B4F3A;} .c4{background:#3D3550;} .c5{background:#3A4A3A;}
+.c1,.c2,.c3,.c4,.c5{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0px,rgba(255,255,255,.025) 1px,transparent 1px,transparent 12px);}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <div class="nav-mark">
+    <span class="nav-griff">Griff</span>
+    <span class="nav-drury">Drury</span>
+    <span class="nav-welsh">Gruffudd Drury</span>
+  </div>
+  <div class="nav-center">
+    <div class="toggle-wrap" id="toggle">
+      <span class="tl">Light</span>
+      <div class="track" id="track"><div class="thumb"></div></div>
+      <span class="tl">Dark</span>
+    </div>
+  </div>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><span id="work-btn" onclick="toggleWork()">Work <span class="work-arrow" id="work-arrow">▾</span></span></li>
+      <li><a href="about.html" style="font-family:'DM Mono',monospace;font-size:10px;font-weight:300;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s;" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--muted)'">About</a></li>
+      <li><a href="contact.html" style="font-family:'DM Mono',monospace;font-size:10px;font-weight:300;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s;" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--muted)'">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- WORK OVERLAY -->
+<div class="w-overlay" id="w-overlay">
+  <div class="w-backdrop" onclick="closeWork()"></div>
+  <div class="w-panel">
+    <button class="w-close" onclick="closeWork()"><span>×</span> Close</button>
+    <div class="w-inner">
+      <div>
+        <div class="w-label">Work</div>
+        <p class="w-intro">Projects spanning digital, spatial, material and illustrated disciplines — select one to explore.</p>
+      </div>
+      <div class="disc-list">
+        <div class="disc-item-overlay" onclick="goToArchive('graphic')"><span class="disc-name">Graphic & Brand</span><div class="disc-right"><span class="disc-count">7 projects</span><span class="disc-arr">→</span></div></div>
+        <div class="disc-item-overlay" onclick="goToArchive('ux')"><span class="disc-name">UX & Digital</span><div class="disc-right"><span class="disc-count">3 projects</span><span class="disc-arr">→</span></div></div>
+        <div class="disc-item-overlay" onclick="goToArchive('material')"><span class="disc-name">Material & Object</span><div class="disc-right"><span class="disc-count">2 projects</span><span class="disc-arr">→</span></div></div>
+        <div class="disc-item-overlay" onclick="goToArchive('research')"><span class="disc-name">Research & Writing</span><div class="disc-right"><span class="disc-count">9 projects</span><span class="disc-arr">→</span></div></div>
+        <div class="disc-item-overlay" onclick="goToArchive('drawing')"><span class="disc-name">Drawing Practice</span><div class="disc-right"><span class="disc-count">5 projects</span><span class="disc-arr">→</span></div></div>
+        <div class="disc-item-overlay" onclick="goToArchive()"><span class="disc-name">Full Archive →</span><div class="disc-right"><span class="disc-count">All work</span><span class="disc-arr">→</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-top">
+    <div class="eyebrow">Designer &amp; Maker — United Kingdom</div>
+    <div class="hero-name">
+      <span class="hero-griff">Griff</span>
+      <span class="hero-drury">Drury</span>
+      <span class="hero-welsh">Gruffudd Drury</span>
+    </div>
+    <div class="rotator-wrap">
+      <div class="rotator" id="rotator">
+        <div class="rot-slide active c1"><div class="rot-tag">Spatial &amp; Architecture</div><span class="rot-inner">Architectural visualisation</span></div>
+        <div class="rot-slide c2"><div class="rot-tag">Graphic &amp; Brand</div><span class="rot-inner">Brand identity project</span></div>
+        <div class="rot-slide c3"><div class="rot-tag">Material &amp; Object</div><span class="rot-inner">Object &amp; making</span></div>
+        <div class="rot-slide c4"><div class="rot-tag">UX &amp; Digital</div><span class="rot-inner">Digital product design</span></div>
+        <div class="rot-slide c5"><div class="rot-tag">Drawing Practice</div><span class="rot-inner">Graphics &amp; illustration</span></div>
+      </div>
+      <div class="rot-dots" id="rdots"></div>
+    </div>
+  </div>
+  <div class="hero-bottom">
+    <div class="pills">
+      <button class="pill active">All</button>
+      <button class="pill">Graphic</button>
+      <button class="pill">UX</button>
+      <button class="pill">Material</button>
+      <button class="pill">Drawing</button>
+    </div>
+    <div class="scroll-cue">Work <svg class="scroll-arr" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="1,3 5,7 9,3"/></svg></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee"><div class="m-track">
+  <span class="m-item">Brand Identity</span><span class="m-dot">·</span>
+  <span class="m-item">Architectural Visualisation</span><span class="m-dot">·</span>
+  <span class="m-item">UX Design</span><span class="m-dot">·</span>
+  <span class="m-item">Biomaterial Development</span><span class="m-dot">·</span>
+  <span class="m-item">Furniture &amp; Structure</span><span class="m-dot">·</span>
+  <span class="m-item">Metalwork</span><span class="m-dot">·</span>
+  <span class="m-item">Product Design</span><span class="m-dot">·</span>
+  <span class="m-item">Illustration</span><span class="m-dot">·</span>
+  <span class="m-item">Brand Identity</span><span class="m-dot">·</span>
+  <span class="m-item">Architectural Visualisation</span><span class="m-dot">·</span>
+  <span class="m-item">UX Design</span><span class="m-dot">·</span>
+  <span class="m-item">Biomaterial Development</span><span class="m-dot">·</span>
+  <span class="m-item">Furniture &amp; Structure</span><span class="m-dot">·</span>
+  <span class="m-item">Metalwork</span><span class="m-dot">·</span>
+  <span class="m-item">Product Design</span><span class="m-dot">·</span>
+  <span class="m-item">Illustration</span><span class="m-dot">·</span>
+</div></div>
+
+<!-- WORK -->
+<section class="section" id="work">
+  <div class="sec-hdr reveal">
+    <span class="sec-title">Selected Work</span>
+    <button class="sec-action" onclick="window.location.href='archive.html'">View all →</button>
+  </div>
+  <div class="work-grid">
+    <div class="wcard reveal rd1" data-project="0"><div class="card-bg c1"></div><div class="card-ov"><span class="card-cat">Graphic &amp; Brand</span><span class="card-title">Escape — The Londoner's Underground</span></div><div class="card-hint">click · preview &nbsp;|&nbsp; dbl · open</div></div>
+    <div class="wcard reveal rd2" data-project="1"><div class="card-bg c2"></div><div class="card-ov"><span class="card-cat">Material &amp; Object</span><span class="card-title">Ripe for Revival</span></div><div class="card-hint">click · preview &nbsp;|&nbsp; dbl · open</div></div>
+    <div class="wcard reveal rd1" data-project="2"><div class="card-bg c3"></div><div class="card-ov"><span class="card-cat">Material &amp; Object</span><span class="card-title">BBcube</span></div><div class="card-hint">click · preview &nbsp;|&nbsp; dbl · open</div></div>
+    <div class="wcard reveal rd2" data-project="3"><div class="card-bg c4"></div><div class="card-ov"><span class="card-cat">Graphic &amp; Brand</span><span class="card-title">Real Relief — Safepad</span></div><div class="card-hint">click · preview &nbsp;|&nbsp; dbl · open</div></div>
+    <div class="wcard reveal rd3" data-project="4"><div class="card-bg c5"></div><div class="card-ov"><span class="card-cat">Drawing Practice</span><span class="card-title">The Plight of Our Pollinators</span></div><div class="card-hint">click · preview &nbsp;|&nbsp; dbl · open</div></div>
+  </div>
+</section>
+
+<!-- ABOUT STRIP -->
+<section class="section" id="about">
+  <div class="about-grid">
+    <div class="reveal">
+      <h2 class="about-h">Thinking<br>at the<br><span class="or">boundary</span></h2>
+      <p class="about-body">A designer and maker working across brand identity, UX, spatial design, and physical craft — from biomaterial research to architectural visualisation. Recently graduated and actively seeking ambitious studios and collaborators who value work that crosses disciplines.</p>
+      <a class="about-cta" href="about.html">About Griff →</a>
+    </div>
+    <div class="stats-grid reveal rd1">
+      <div class="stat"><div class="stat-num"><span class="or">5</span>+</div><div class="stat-lbl">Disciplines</div></div>
+      <div class="stat"><div class="stat-num">14</div><div class="stat-lbl">Projects</div></div>
+      <div class="stat"><div class="stat-num">UK</div><div class="stat-lbl">Based</div></div>
+      <div class="stat"><div class="stat-num"><span class="or">Open</span></div><div class="stat-lbl">To work</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE 2 -->
+<div class="marquee"><div class="m-track rev">
+  <span class="m-item">gruffdrury.website</span><span class="m-dot">·</span>
+  <span class="m-item">Open to opportunities</span><span class="m-dot">·</span>
+  <span class="m-item">Available for freelance</span><span class="m-dot">·</span>
+  <span class="m-item">Based in the UK</span><span class="m-dot">·</span>
+  <span class="m-item">gruffdrury.website</span><span class="m-dot">·</span>
+  <span class="m-item">Open to opportunities</span><span class="m-dot">·</span>
+  <span class="m-item">Available for freelance</span><span class="m-dot">·</span>
+  <span class="m-item">Based in the UK</span><span class="m-dot">·</span>
+</div></div>
+
+<!-- FOOTER -->
+<footer id="contact">
+  <span class="foot-url">gruffdrury.website</span>
+  <a class="foot-cta" href="contact.html">Get in touch →</a>
+</footer>
+
+<!-- LIGHTBOX -->
+<div class="lb" id="lb">
+  <div class="lb-backdrop" onclick="closeLB()"></div>
+  <div class="lb-box">
+    <button class="lb-close" onclick="closeLB()">×</button>
+    <div class="lb-img-wrap">
+      <div class="lb-slides" id="lb-slides"></div>
+      <button class="lb-prev" onclick="lbNav(-1)">‹</button>
+      <button class="lb-next" onclick="lbNav(1)">›</button>
+      <div class="lb-counter" id="lb-counter">1 / 3</div>
+      <div class="lb-dbl-hint">Double-click card to open full project</div>
+    </div>
+    <div class="lb-info">
+      <span class="lb-tag" id="lb-tag">Category</span>
+      <span class="lb-title" id="lb-title">Project Title</span>
+      <div><span class="lb-year" id="lb-year">2024</span></div>
+      <p class="lb-desc" id="lb-desc">Description</p>
+      <div class="lb-actions">
+        <button class="lb-btn lb-btn-outline" onclick="closeLB()">← Back</button>
+        <button class="lb-btn lb-btn-primary" id="lb-full-btn">View full project →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const projects = [
+  { tag:'Graphic & Brand', title:"Escape — The Londoner's Underground", year:'2023', desc:'Redesigning the London Underground map to reveal hidden pathways, shortcuts and alternative routes.', imgs:['c1','c1','c1'], page:'archive.html#graphic' },
+  { tag:'Material & Object', title:'Ripe for Revival', year:'2023', desc:'Vegan compostable biomaterial from household food by-products. Shown at Goldsmiths Design Degree Show 2023.', imgs:['c2','c2','c2'], page:'archive.html#material' },
+  { tag:'Material & Object', title:'BBcube — Portable BBQ', year:'2024', desc:'Portable sustainable BBQ — green industrial design combining quality materials and considered form.', imgs:['c3','c3','c3'], page:'archive.html#material' },
+  { tag:'Graphic & Brand', title:'Real Relief — Safepad', year:'2023', desc:'Packaging design for a Danish social enterprise. Full brand system across three product variants.', imgs:['c4','c4','c4'], page:'archive.html#graphic' },
+  { tag:'Drawing Practice', title:'The Plight of Our Pollinators', year:'2022', desc:'Research and awareness project on bee decline — bee studies in coloured pencil and ink.', imgs:['c5','c5','c5'], page:'archive.html#drawing' },
+];
+
+// CURSOR
+const cur = document.getElementById('cur');
+document.addEventListener('mousemove', e => { cur.style.left = e.clientX + 'px'; cur.style.top = e.clientY + 'px'; });
+document.querySelectorAll('a, button, .wcard, .disc-item-overlay, .toggle-wrap, .rot-dot, .pill').forEach(el => {
+  el.addEventListener('mouseenter', () => cur.classList.add('big'));
+  el.addEventListener('mouseleave', () => cur.classList.remove('big'));
+});
+
+// THEME
+let dark = false;
+document.getElementById('toggle').addEventListener('click', () => {
+  dark = !dark;
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : '');
+  document.getElementById('track').classList.toggle('on', dark);
+});
+
+// PILLS
+document.querySelectorAll('.pill').forEach(p => {
+  p.addEventListener('click', function() {
+    document.querySelectorAll('.pill').forEach(x => x.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// WORK OVERLAY
+let workOpen = false;
+function toggleWork() {
+  workOpen = !workOpen;
+  document.getElementById('w-overlay').classList.toggle('open', workOpen);
+  document.getElementById('work-arrow').classList.toggle('flipped', workOpen);
+}
+function closeWork() {
+  workOpen = false;
+  document.getElementById('w-overlay').classList.remove('open');
+  document.getElementById('work-arrow').classList.remove('flipped');
+}
+function goToArchive(section) {
+  closeWork();
+  if (section) {
+    window.location.href = 'archive.html?disc=' + section;
+  } else {
+    window.location.href = 'archive.html';
+  }
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeWork(); closeLB(); } });
+
+// ROTATOR
+let rCur = 0;
+const rSlides = document.querySelectorAll('.rot-slide');
+const rdWrap = document.getElementById('rdots');
+rSlides.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'rot-dot' + (i === 0 ? ' on' : '');
+  d.onclick = () => rGoTo(i);
+  rdWrap.appendChild(d);
+});
+function rGoTo(i) {
+  rSlides[rCur].classList.remove('active'); rdWrap.children[rCur].classList.remove('on');
+  rCur = i;
+  rSlides[rCur].classList.add('active'); rdWrap.children[rCur].classList.add('on');
+}
+setInterval(() => rGoTo((rCur + 1) % rSlides.length), 3000);
+
+// LIGHTBOX
+let lbCur = 0, lbProject = null, clickTimer = null;
+function openLB(idx) {
+  lbProject = projects[idx]; lbCur = 0;
+  const wrap = document.getElementById('lb-slides');
+  wrap.innerHTML = '';
+  lbProject.imgs.forEach((cls, i) => {
+    const s = document.createElement('div');
+    s.className = 'lb-slide ' + cls;
+    s.innerHTML = `<span class="lb-slide-inner">Image ${i+1}</span>`;
+    wrap.appendChild(s);
+  });
+  wrap.style.transform = 'translateX(0)';
+  document.getElementById('lb-tag').textContent = lbProject.tag;
+  document.getElementById('lb-title').textContent = lbProject.title;
+  document.getElementById('lb-year').textContent = lbProject.year;
+  document.getElementById('lb-desc').textContent = lbProject.desc;
+  document.getElementById('lb-full-btn').onclick = () => window.location.href = lbProject.page;
+  updateCounter();
+  document.getElementById('lb').classList.add('open');
+}
+function closeLB() { document.getElementById('lb').classList.remove('open'); }
+function lbNav(dir) {
+  lbCur = (lbCur + dir + lbProject.imgs.length) % lbProject.imgs.length;
+  document.getElementById('lb-slides').style.transform = `translateX(-${lbCur * 100}%)`;
+  updateCounter();
+}
+function updateCounter() { document.getElementById('lb-counter').textContent = `${lbCur + 1} / ${lbProject.imgs.length}`; }
+
+// SINGLE vs DOUBLE CLICK on cards
+document.querySelectorAll('.wcard').forEach(card => {
+  card.addEventListener('click', e => {
+    const idx = parseInt(card.dataset.project);
+    if (clickTimer) { clearTimeout(clickTimer); clickTimer = null; window.location.href = projects[idx].page; }
+    else { clickTimer = setTimeout(() => { clickTimer = null; openLB(idx); }, 260); }
+  });
+});
+
+// SCROLL REVEALS
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); obs.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(r => obs.observe(r));
+</script>
+</body>
+</html>

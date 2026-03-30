@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — Griff Drury</title>
+<link rel="stylesheet" href="css/main.css">
+<style>
+body { overflow-x: hidden; }
+.contact-page { min-height: 100vh; padding: 100px 28px 60px; max-width: 800px; margin: 0 auto; }
+.contact-page-title { font-family: 'Satoshi', sans-serif; font-weight: 700; font-size: clamp(40px,6vw,72px); letter-spacing: -0.03em; text-transform: uppercase; color: var(--ink); line-height: 0.92; margin-bottom: 40px; transition: color 0.4s; }
+.contact-page-title .or { color: var(--orange); }
+.placeholder { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 300; letter-spacing: 0.08em; line-height: 1.9; color: var(--muted); padding: 24px; border: 0.5px dashed var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div id="cur"></div>
+<nav class="top-nav">
+  <div class="nav-mark">
+    <span class="nav-griff">Griff</span>
+    <span class="nav-drury">Drury</span>
+    <span class="nav-welsh">Gruffudd Drury</span>
+  </div>
+  <div class="nav-center">
+    <div class="toggle-wrap" id="tog">
+      <span class="tl">Light</span>
+      <div class="track" id="track"><div class="thumb"></div></div>
+      <span class="tl">Dark</span>
+    </div>
+  </div>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><span onclick="window.location.href='index.html'">← Home</span></li>
+      <li><span onclick="window.location.href='archive.html'">Work</span></li>
+      <li><span onclick="window.location.href='about.html'">About</span></li>
+    </ul>
+  </div>
+</nav>
+<div class="contact-page">
+  <h1 class="contact-page-title">Get in<br><span class="or">Touch</span></h1>
+  <div class="placeholder">Contact page — coming soon. This page will contain contact details, availability, and a contact form.</div>
+</div>
+<script>
+const c = document.getElementById('cur');
+document.addEventListener('mousemove', e => { c.style.left = e.clientX + 'px'; c.style.top = e.clientY + 'px'; });
+document.getElementById('tog').addEventListener('click', () => {
+  const d = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', d ? '' : 'dark');
+  document.getElementById('track').classList.toggle('on', !d);
+});
+</script>
+</body>
+</html>
