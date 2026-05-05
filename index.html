@@ -117,10 +117,8 @@ footer { padding: 20px 28px; border-top: 0.5px solid var(--border); display: fle
 
 <!-- TOP NAV -->
 <nav class="top-nav">
-  <div class="nav-mark">
-    <span class="nav-griff">Griff</span>
-    <span class="nav-drury">Drury</span>
-    <span class="nav-welsh">Gruffudd Drury</span>
+  <div class="nav-mark" onclick="window.location.href='index.html'">
+    <span class="nav-g">G.</span><span class="nav-drury">Drury</span>
   </div>
   <div class="nav-center">
     <div class="toggle-wrap" id="toggle">
@@ -149,12 +147,12 @@ footer { padding: 20px 28px; border-top: 0.5px solid var(--border); display: fle
         <p class="w-intro">Projects spanning digital, spatial, material and illustrated disciplines — select one to explore.</p>
       </div>
       <div class="disc-list">
+        <div class="disc-item-overlay" onclick="goToArchive()"><span class="disc-name">Full Archive →</span><div class="disc-right"><span class="disc-count">All work</span><span class="disc-arr">→</span></div></div>
         <div class="disc-item-overlay" onclick="goToArchive('graphic')"><span class="disc-name">Graphic & Brand</span><div class="disc-right"><span class="disc-count">7 projects</span><span class="disc-arr">→</span></div></div>
         <div class="disc-item-overlay" onclick="goToArchive('ux')"><span class="disc-name">UX & Digital</span><div class="disc-right"><span class="disc-count">3 projects</span><span class="disc-arr">→</span></div></div>
         <div class="disc-item-overlay" onclick="goToArchive('material')"><span class="disc-name">Material & Object</span><div class="disc-right"><span class="disc-count">2 projects</span><span class="disc-arr">→</span></div></div>
         <div class="disc-item-overlay" onclick="goToArchive('research')"><span class="disc-name">Research & Writing</span><div class="disc-right"><span class="disc-count">9 projects</span><span class="disc-arr">→</span></div></div>
         <div class="disc-item-overlay" onclick="goToArchive('drawing')"><span class="disc-name">Drawing Practice</span><div class="disc-right"><span class="disc-count">5 projects</span><span class="disc-arr">→</span></div></div>
-        <div class="disc-item-overlay" onclick="goToArchive()"><span class="disc-name">Full Archive →</span><div class="disc-right"><span class="disc-count">All work</span><span class="disc-arr">→</span></div></div>
       </div>
     </div>
   </div>
