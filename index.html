@@ -43,7 +43,7 @@ html, body { height: 100%; overflow: hidden; cursor: none; }
   line-height: 1;
 }
 .bgt-g {
-  display: block; font-family: 'Satoshi', sans-serif; font-weight: 700; font-style: italic;
+  display: block; font-family: 'Satoshi', sans-serif; font-weight: 700;
   font-size: clamp(64px, 7vw, 100px); color: var(--orange); letter-spacing: -0.025em; line-height: 1;
 }
 .bgt-d {
@@ -95,15 +95,13 @@ html, body { height: 100%; overflow: hidden; cursor: none; }
 
 /* ── CURSOR ── */
 #cur {
-  position: fixed; width: 7px; height: 7px; background: var(--ink);
+  position: fixed; width: 7px; height: 7px; background: #fff;
   border-radius: 50%; pointer-events: none; z-index: 9999;
-  transform: translate(-50%,-50%); mix-blend-mode: multiply;
+  transform: translate(-50%,-50%); mix-blend-mode: difference;
   transition: width .28s cubic-bezier(0.22,1,0.36,1),
               height .28s cubic-bezier(0.22,1,0.36,1),
-              background .2s, opacity .28s,
-              transform .12s cubic-bezier(0.34,1.56,0.64,1);
+              opacity .28s, transform .12s cubic-bezier(0.34,1.56,0.64,1);
 }
-[data-theme="dark"] #cur { mix-blend-mode: screen; }
 
 /* ── HERO ── */
 #s-hero {
@@ -297,7 +295,7 @@ html, body { height: 100%; overflow: hidden; cursor: none; }
   <!-- ── BACKGROUND LAYER ── -->
   <div id="bg">
     <div id="bgt">
-      <span class="bgt-g">Griff</span>
+      <span class="bgt-g">Gruff</span>
       <span class="bgt-d">Drury</span>
     </div>
     <div id="bgi">
@@ -324,11 +322,20 @@ html, body { height: 100%; overflow: hidden; cursor: none; }
         <span class="nav-g">G.</span><span class="nav-drury">Drury</span>
       </div>
       <div class="nav-center">
-        <div class="toggle-wrap" id="toggle">
-          <span class="tl">Light</span>
-          <div class="track" id="track"><div class="thumb"></div></div>
-          <span class="tl">Dark</span>
-        </div>
+        <div class="theme-dial" id="theme-dial" onclick="advTheme()">
+    <span class="nd-icon" id="nd-icon">&#x2600;</span>
+    <svg width="34" height="34" viewBox="0 0 34 34" xmlns="http://www.w3.org/2000/svg">
+      <path class="nd-arc" d="M 4.4,11.4 A 15,15,0,0,1,17,2 A 15,15,0,0,1,29.6,11.4" stroke-width="1.2"/>
+      <circle class="nd-pm" id="nd-pm0" cx="4.4"  cy="11.4" r="2"/>
+      <circle class="nd-pm" id="nd-pm1" cx="17"   cy="2"    r="2"/>
+      <circle class="nd-pm" id="nd-pm2" cx="29.6" cy="11.4" r="2"/>
+      <g id="nd-knob">
+        <circle class="nd-body" cx="17" cy="17" r="10"/>
+        <circle class="nd-ind"  cx="17" cy="8.5" r="1.8"/>
+      </g>
+    </svg>
+    <span class="nd-label" id="nd-label">Light</span>
+  </div>
       </div>
       <div class="nav-right">
         <ul class="nav-links">
@@ -773,11 +780,11 @@ html, body { height: 100%; overflow: hidden; cursor: none; }
     curMode = mode;
     cur.style.transform = 'translate(-50%,-50%) scale(1)';
     switch (mode) {
-      case 'image':  Object.assign(cur.style, { width:'44px', height:'44px', background:'var(--ink)', opacity:'0.09' }); break;
-      case 'button': Object.assign(cur.style, { width:'9px',  height:'9px',  background:'var(--orange)', opacity:'1' }); break;
-      case 'grab':   Object.assign(cur.style, { width:'12px', height:'12px', background:'var(--ink)', opacity:'0.42' }); break;
-      case 'resize': Object.assign(cur.style, { width:'6px',  height:'6px',  background:'var(--orange)', opacity:'1' }); break;
-      default:       Object.assign(cur.style, { width:'7px',  height:'7px',  background:'var(--ink)', opacity:'1' });
+      case 'image':  Object.assign(cur.style, { width:'36px', height:'36px', background:'#fff', opacity:'0.7' }); break;
+      case 'button': Object.assign(cur.style, { width:'9px',  height:'9px',  background:'#fff', opacity:'1' }); break;
+      case 'grab':   Object.assign(cur.style, { width:'12px', height:'12px', background:'#fff', opacity:'0.5' }); break;
+      case 'resize': Object.assign(cur.style, { width:'6px',  height:'6px',  background:'#fff', opacity:'1' }); break;
+      default:       Object.assign(cur.style, { width:'7px',  height:'7px',  background:'#fff', opacity:'1' });
     }
   }
 
@@ -789,7 +796,7 @@ html, body { height: 100%; overflow: hidden; cursor: none; }
   });
 
   /* nav links + CTAs → orange */
-  document.querySelectorAll('.nav-links li span, .nav-links a, .disc-item-overlay, .toggle-wrap').forEach(el => {
+  document.querySelectorAll('.nav-links li span, .nav-links a, .disc-item-overlay').forEach(el => {
     el.addEventListener('mouseenter', () => setCur('button'));
     el.addEventListener('mouseleave', () => setCur('default'));
   });
@@ -829,13 +836,39 @@ html, body { height: 100%; overflow: hidden; cursor: none; }
    FUNCTIONAL JS (retained from live site)
 ═══════════════════════════════════════════════════════════ */
 
-/* Dark mode toggle */
-let dark = false;
-document.getElementById('toggle').addEventListener('click', () => {
-  dark = !dark;
-  document.documentElement.setAttribute('data-theme', dark ? 'dark' : '');
-  document.getElementById('track').classList.toggle('on', dark);
-});
+/* ── THEME DIAL — always clockwise ── */
+(function(){
+  const MODES=['Light','Dark','Fun'], ICONS=['☀','☽','★'];
+  const INC=[55,55,250], DURS=[0.44,0.44,0.9];
+  let st=0, ang=-55;
+  const saved=localStorage.getItem('griff-theme');
+  if(saved==='1'){st=1;ang=0;document.documentElement.setAttribute('data-theme','dark');}
+  else if(saved==='2'){st=2;ang=55;}
+  function updateUI(){
+    const ic=document.getElementById('nd-icon'), lb=document.getElementById('nd-label');
+    if(ic) ic.textContent=ICONS[st]; if(lb) lb.textContent=MODES[st];
+    [0,1,2].forEach(j=>{
+      const pm=document.getElementById('nd-pm'+j); if(!pm) return;
+      if(j===st){pm.setAttribute('fill','#E85D00');pm.setAttribute('r','2.8');}
+      else{pm.removeAttribute('fill');pm.setAttribute('r','2');}
+    });
+  }
+  function syncKnob(){
+    const k=document.getElementById('nd-knob'); if(!k) return;
+    k.style.transition='none'; k.style.transform=`rotate(${ang}deg)`;
+    setTimeout(()=>{k.style.transition='';},60);
+  }
+  window.advTheme=function(){
+    const prev=st; ang+=INC[prev]; st=(st+1)%3;
+    const k=document.getElementById('nd-knob');
+    if(k){k.style.transition=`transform ${DURS[prev]}s cubic-bezier(0.34,1.08,0.64,1)`;
+         k.style.transform=`rotate(${ang}deg)`;}
+    if(st===1) document.documentElement.setAttribute('data-theme','dark');
+    else document.documentElement.removeAttribute('data-theme');
+    localStorage.setItem('griff-theme',st); updateUI();
+  };
+  syncKnob(); updateUI();
+})();
 
 /* Work overlay */
 let workOpen = false;

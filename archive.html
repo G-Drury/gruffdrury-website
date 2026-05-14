@@ -188,11 +188,20 @@ html, body { height: 100%; overflow: hidden; }
     <span class="nav-g">G.</span><span class="nav-drury">Drury</span>
   </div>
   <div class="nav-center">
-    <div class="toggle-wrap" id="tog">
-      <span class="tl">Light</span>
-      <div class="track" id="track"><div class="thumb"></div></div>
-      <span class="tl">Dark</span>
-    </div>
+    <div class="theme-dial" id="theme-dial" onclick="advTheme()">
+    <span class="nd-icon" id="nd-icon">&#x2600;</span>
+    <svg width="34" height="34" viewBox="0 0 34 34" xmlns="http://www.w3.org/2000/svg">
+      <path class="nd-arc" d="M 4.4,11.4 A 15,15,0,0,1,17,2 A 15,15,0,0,1,29.6,11.4" stroke-width="1.2"/>
+      <circle class="nd-pm" id="nd-pm0" cx="4.4"  cy="11.4" r="2"/>
+      <circle class="nd-pm" id="nd-pm1" cx="17"   cy="2"    r="2"/>
+      <circle class="nd-pm" id="nd-pm2" cx="29.6" cy="11.4" r="2"/>
+      <g id="nd-knob">
+        <circle class="nd-body" cx="17" cy="17" r="10"/>
+        <circle class="nd-ind"  cx="17" cy="8.5" r="1.8"/>
+      </g>
+    </svg>
+    <span class="nd-label" id="nd-label">Light</span>
+  </div>
   </div>
   <div class="nav-right">
     <ul class="nav-links">
@@ -297,7 +306,42 @@ function init() {
   // cursor
   const c = document.getElementById('cur');
   document.addEventListener('mousemove', e => { c.style.left = e.clientX + 'px'; c.style.top = e.clientY + 'px'; });
-  document.querySelectorAll('a, button, .proj-row, .disc-item, .snav-sec-item, .snav-proj-item, .toggle-wrap, .side-dot, .disc-arrow').forEach(el => {
+document.addEventListener('mousedown', () => { c.style.transform = 'translate(-50%,-50%) scale(0.5)'; });
+document.addEventListener('mouseup', () => { c.style.transform = 'translate(-50%,-50%) scale(1)'; });
+/* ── THEME DIAL — always clockwise ── */
+(function(){
+  const MODES=['Light','Dark','Fun'], ICONS=['☀','☽','★'];
+  const INC=[55,55,250], DURS=[0.44,0.44,0.9];
+  let st=0, ang=-55;
+  const saved=localStorage.getItem('griff-theme');
+  if(saved==='1'){st=1;ang=0;document.documentElement.setAttribute('data-theme','dark');}
+  else if(saved==='2'){st=2;ang=55;}
+  function updateUI(){
+    const ic=document.getElementById('nd-icon'), lb=document.getElementById('nd-label');
+    if(ic) ic.textContent=ICONS[st]; if(lb) lb.textContent=MODES[st];
+    [0,1,2].forEach(j=>{
+      const pm=document.getElementById('nd-pm'+j); if(!pm) return;
+      if(j===st){pm.setAttribute('fill','#E85D00');pm.setAttribute('r','2.8');}
+      else{pm.removeAttribute('fill');pm.setAttribute('r','2');}
+    });
+  }
+  function syncKnob(){
+    const k=document.getElementById('nd-knob'); if(!k) return;
+    k.style.transition='none'; k.style.transform=`rotate(${ang}deg)`;
+    setTimeout(()=>{k.style.transition='';},60);
+  }
+  window.advTheme=function(){
+    const prev=st; ang+=INC[prev]; st=(st+1)%3;
+    const k=document.getElementById('nd-knob');
+    if(k){k.style.transition=`transform ${DURS[prev]}s cubic-bezier(0.34,1.08,0.64,1)`;
+         k.style.transform=`rotate(${ang}deg)`;}
+    if(st===1) document.documentElement.setAttribute('data-theme','dark');
+    else document.documentElement.removeAttribute('data-theme');
+    localStorage.setItem('griff-theme',st); updateUI();
+  };
+  syncKnob(); updateUI();
+})();
+  document.querySelectorAll('a, button, .proj-row, .disc-item, .snav-sec-item, .snav-proj-item, .side-dot, .disc-arrow').forEach(el => {
     el.addEventListener('mouseenter', () => c.classList.add('big'));
     el.addEventListener('mouseleave', () => c.classList.remove('big'));
   });
@@ -495,10 +539,8 @@ document.getElementById('snav-close').addEventListener('click', closeSNav);
 document.getElementById('snav-bd').addEventListener('click', e => { if (e.target === document.getElementById('snav-bd')) closeSNav(); });
 
 /* ── THEME ── */
-document.getElementById('tog').addEventListener('click', () => {
-  const d = document.documentElement.getAttribute('data-theme') === 'dark';
-  document.documentElement.setAttribute('data-theme', d ? '' : 'dark');
-  document.getElementById('track').classList.toggle('on', !d);
+document.getElementById('theme-dial').addEventListener('click', () => {
+  window.advTheme();
 });
 
 /* ── KEYBOARD ── */

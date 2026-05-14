@@ -132,3 +132,29 @@ body {
 
 @keyframes up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(3px); } }
+
+
+/* ── CURSOR: white + difference blend = auto-inversion on any bg ── */
+*, *::before, *::after { cursor: none !important; }
+#cur {
+  position: fixed; width: 7px; height: 7px; background: #fff;
+  border-radius: 50%; pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%); mix-blend-mode: difference;
+  transition: width .28s cubic-bezier(0.22,1,0.36,1),
+              height .28s cubic-bezier(0.22,1,0.36,1),
+              opacity .28s, transform .12s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+/* ── THEME DIAL ── */
+:root { --dial-knob: #0E0D0C; --dial-ind: #F4F2EF; }
+[data-theme="dark"] { --dial-knob: #1A1816; --dial-ind: #F0EBE3; }
+.theme-dial { display: flex; align-items: center; gap: 7px; user-select: none; }
+.nd-icon  { font-size: 11px; color: var(--orange); line-height: 1; width: 14px; text-align: center; }
+.nd-label { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 300;
+            letter-spacing: 0.18em; text-transform: uppercase; color: var(--orange); width: 40px; }
+.nd-arc   { stroke: var(--border); fill: none; stroke-linecap: round; }
+.nd-pm    { fill: rgba(14,13,12,0.2); }
+[data-theme="dark"] .nd-pm { fill: rgba(240,235,227,0.2); }
+.nd-body  { fill: var(--dial-knob); stroke: var(--border); stroke-width: 0.5px; }
+.nd-ind   { fill: var(--dial-ind); }
+#nd-knob  { transform-box: view-box; transform-origin: 17px 17px; }
