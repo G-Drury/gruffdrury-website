@@ -157,4 +157,4 @@ body {
 [data-theme="dark"] .nd-pm { fill: rgba(240,235,227,0.2); }
 .nd-body  { fill: var(--dial-knob); stroke: var(--border); stroke-width: 0.5px; }
 .nd-ind   { fill: var(--dial-ind); }
-#nd-knob  { transform-box: view-box; transform-origin: 17px 17px; }
+#nd-knob  { transform-origin: center center; }  /* knob centred at local 0,0 via translate wrapper */

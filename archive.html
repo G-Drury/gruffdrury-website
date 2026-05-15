@@ -151,6 +151,17 @@ html, body { height: 100%; overflow: hidden; }
 .c4{background:#2A1E40;} .c5{background:#1A2E28;} .c6{background:#3A2A1A;}
 .c7{background:#18283A;} .c8{background:#2A180E;} .c9{background:#382A4A;}
 .c10{background:#1C2C1A;}
+
+/* ── cursor: force none on every element in this page ── */
+html, body, *, *::before, *::after { cursor: none !important; }
+
+/* ── custom cursor ── */
+#cur {
+  position: fixed; width: 8px; height: 8px; background: #fff;
+  border-radius: 50%; pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%); mix-blend-mode: difference;
+  transition: transform .12s cubic-bezier(.34,1.56,.64,1);
+}
 </style>
 </head>
 <body>
@@ -191,14 +202,14 @@ html, body { height: 100%; overflow: hidden; }
     <div class="theme-dial" id="theme-dial" onclick="advTheme()">
     <span class="nd-icon" id="nd-icon">&#x2600;</span>
     <svg width="34" height="34" viewBox="0 0 34 34" xmlns="http://www.w3.org/2000/svg">
-      <path class="nd-arc" d="M 4.4,11.4 A 15,15,0,0,1,17,2 A 15,15,0,0,1,29.6,11.4" stroke-width="1.2"/>
+      <path class="nd-arc" fill="none" d="M 4.4,11.4 A 15,15,0,0,1,17,2 A 15,15,0,0,1,29.6,11.4" stroke-width="1.2"/>
       <circle class="nd-pm" id="nd-pm0" cx="4.4"  cy="11.4" r="2"/>
       <circle class="nd-pm" id="nd-pm1" cx="17"   cy="2"    r="2"/>
       <circle class="nd-pm" id="nd-pm2" cx="29.6" cy="11.4" r="2"/>
-      <g id="nd-knob">
-        <circle class="nd-body" cx="17" cy="17" r="10"/>
-        <circle class="nd-ind"  cx="17" cy="8.5" r="1.8"/>
-      </g>
+      <g transform="translate(17,17)"><g id="nd-knob">
+        <circle class="nd-body" cx="0" cy="0" r="10"/>
+        <circle class="nd-ind"  cx="0" cy="-8.5" r="1.8"/>
+      </g></g>
     </svg>
     <span class="nd-label" id="nd-label">Light</span>
   </div>
@@ -225,6 +236,7 @@ html, body { height: 100%; overflow: hidden; }
 </div>
 
 <script>
+const curEl = document.getElementById('cur');
 /* ── DATA — single source of truth ── */
 const DISCS = [
   { id:'graphic',  label:'Graphic & Brand',      visible:true  },
@@ -303,11 +315,10 @@ function init() {
       }, 50);
     }
   }
-  // cursor
-  const c = document.getElementById('cur');
-  document.addEventListener('mousemove', e => { c.style.left = e.clientX + 'px'; c.style.top = e.clientY + 'px'; });
-document.addEventListener('mousedown', () => { c.style.transform = 'translate(-50%,-50%) scale(0.5)'; });
-document.addEventListener('mouseup', () => { c.style.transform = 'translate(-50%,-50%) scale(1)'; });
+  // cursor (element ref is global: curEl)
+  document.addEventListener('mousemove', e => { curEl.style.left = e.clientX + 'px'; curEl.style.top = e.clientY + 'px'; });
+document.addEventListener('mousedown', () => { curEl.style.transform = 'translate(-50%,-50%) scale(0.5)'; });
+document.addEventListener('mouseup', () => { curEl.style.transform = 'translate(-50%,-50%) scale(1)'; });
 /* ── THEME DIAL — always clockwise ── */
 (function(){
   const MODES=['Light','Dark','Fun'], ICONS=['☀','☽','★'];
@@ -327,14 +338,17 @@ document.addEventListener('mouseup', () => { c.style.transform = 'translate(-50%
   }
   function syncKnob(){
     const k=document.getElementById('nd-knob'); if(!k) return;
-    k.style.transition='none'; k.style.transform=`rotate(${ang}deg)`;
+    k.style.transition='none';
+    k.style.transform=`rotate(${ang}deg)`;
     setTimeout(()=>{k.style.transition='';},60);
   }
   window.advTheme=function(){
     const prev=st; ang+=INC[prev]; st=(st+1)%3;
     const k=document.getElementById('nd-knob');
-    if(k){k.style.transition=`transform ${DURS[prev]}s cubic-bezier(0.34,1.08,0.64,1)`;
-         k.style.transform=`rotate(${ang}deg)`;}
+    if(k){
+      k.style.transition=`transform ${DURS[prev]}s cubic-bezier(0.34,1.08,0.64,1)`;
+      k.style.transform=`rotate(${ang}deg)`;
+    }
     if(st===1) document.documentElement.setAttribute('data-theme','dark');
     else document.documentElement.removeAttribute('data-theme');
     localStorage.setItem('griff-theme',st); updateUI();
