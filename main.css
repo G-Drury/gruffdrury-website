@@ -146,15 +146,28 @@ body {
 }
 
 /* ── THEME DIAL ── */
-:root { --dial-knob: #0E0D0C; --dial-ind: #F4F2EF; }
-[data-theme="dark"] { --dial-knob: #1A1816; --dial-ind: #F0EBE3; }
-.theme-dial { display: flex; align-items: center; gap: 7px; user-select: none; }
-.nd-icon  { font-size: 11px; color: var(--orange); line-height: 1; width: 14px; text-align: center; }
-.nd-label { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 300;
-            letter-spacing: 0.18em; text-transform: uppercase; color: var(--orange); width: 40px; }
-.nd-arc   { stroke: var(--border); fill: none; stroke-linecap: round; }
-.nd-pm    { fill: rgba(14,13,12,0.2); }
-[data-theme="dark"] .nd-pm { fill: rgba(240,235,227,0.2); }
-.nd-body  { fill: var(--dial-knob); stroke: var(--border); stroke-width: 0.5px; }
-.nd-ind   { fill: var(--dial-ind); }
-#nd-knob  { transform-origin: center center; }  /* knob centred at local 0,0 via translate wrapper */
+/* dial knob colour: dark grey in light mode, clearly visible mid-grey in dark */
+:root          { --dial-knob: #0E0D0C; }
+[data-theme="dark"] { --dial-knob: #3C3835; }
+
+/* theme dial — fixed-width flanks prevent layout shift; user-select stops text highlight */
+.theme-dial {
+  display: flex; align-items: center; gap: 8px;
+  user-select: none; -webkit-user-select: none;
+}
+.nd-icon {
+  font-size: 13px; color: var(--orange); line-height: 1;
+  width: 18px; text-align: center; display: inline-block; flex-shrink: 0;
+  user-select: none; -webkit-user-select: none;
+}
+.nd-label {
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 300;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--orange);
+  width: 46px; display: inline-block; flex-shrink: 0;
+  user-select: none; -webkit-user-select: none;
+}
+.nd-arc  { stroke: var(--border); fill: none; stroke-linecap: round; }
+.nd-pm   { fill: rgba(14,13,12,0.22); }
+[data-theme="dark"] .nd-pm { fill: rgba(240,235,227,0.22); }
+.nd-body { fill: var(--dial-knob); stroke: var(--border); stroke-width: 0.5px; }
+#nd-knob { transform-origin: center center; }
