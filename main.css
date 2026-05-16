@@ -147,26 +147,26 @@ body {
 }
 
 /* ── THEME DIAL ── */
-/* ── theme dial ─────────────────────────────────────────────────── */
+/* ── theme dial ──────────────────────────────────────────────────── */
 
-/* knob colour: near-black (light mode) / visible mid-grey (dark mode) */
+/* knob colour: near-black light / visible mid-grey dark */
 :root               { --dial-knob: #0E0D0C; }
 [data-theme="dark"] { --dial-knob: #3A3632; }
 
-/* container — no outer onclick; children handle their own clicks */
+/* outer flex row — icon | anchor | label                              */
 .theme-dial {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   -webkit-user-select: none;
   user-select: none;
 }
 
-/* icon — fixed 18px, centred, orange, matches nav link visual weight */
+/* icon: 40px right-aligned so symbol sits close to knob               */
 .nd-icon {
-  flex: 0 0 18px;
-  width: 18px;
-  text-align: center;
+  flex: 0 0 40px;
+  width: 40px;
+  text-align: right;
   font-size: 13px;
   line-height: 1;
   color: #E85D00;
@@ -174,30 +174,54 @@ body {
   user-select: none;
 }
 
-/* label — EXACTLY matches .nav-links li span; fixed 46px prevents shift */
+/* label: 40px left-aligned, matches nav links exactly                  */
 .nd-label {
-  flex: 0 0 46px;
-  width: 46px;
+  flex: 0 0 40px;
+  width: 40px;
   font-family: 'DM Mono', monospace;
   font-size: 10px;
   font-weight: 300;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: #E85D00;
+  text-align: left;
   -webkit-user-select: none;
   user-select: none;
 }
 
-/* arc: subtle, visible in both modes */
+/* anchor: same width as SVG, HEIGHT = 1px so it NEVER inflates the nav.
+   SVG inside is position:absolute — completely out of layout flow.      */
+.nd-knob-anchor {
+  position: relative;
+  flex: 0 0 64px;
+  width: 64px;
+  height: 1px;
+  overflow: visible;
+}
+
+/* SVG: absolutely positioned; translateY offsets it so the knob hangs
+   22px below the nav border while the arc sits within the nav.          */
+.nd-knob-anchor svg {
+  position: absolute;
+  top: 50%;                        /* 0.5px from anchor top */
+  left: 0;                         /* anchor width = SVG width, so left=0 is correct */
+  transform: translateY(calc(-50% + 12px));  /* -32+12 = -20px → SVG top at ~3px in nav */
+  display: block;
+  overflow: visible;
+  width: 64px;
+  height: 64px;
+}
+
+/* arc: visible and theme-aware */
 .nd-arc                     { fill: none; stroke: rgba(14,13,12,0.30); stroke-linecap: round; }
 [data-theme="dark"] .nd-arc { stroke: rgba(240,235,227,0.30); }
 
-/* position dots: clickable; JS overrides fill+r when active */
-.nd-pm                     { fill: rgba(14,13,12,0.25); pointer-events: all; }
-[data-theme="dark"] .nd-pm { fill: rgba(240,235,227,0.25); }
+/* position dots: clickable; JS overrides fill+r on active dot */
+.nd-pm                     { fill: rgba(14,13,12,0.28); pointer-events: all; }
+[data-theme="dark"] .nd-pm { fill: rgba(240,235,227,0.28); }
 
 /* knob body */
 .nd-body { fill: var(--dial-knob); stroke: var(--border); stroke-width: 0.5px; }
 
-/* rotation pivots on the translate(32,32) group's local origin */
+/* rotation — translate(32,32) group means local origin = knob centre */
 #nd-knob { transform-origin: center center; }
