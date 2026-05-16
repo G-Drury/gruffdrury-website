@@ -59,7 +59,7 @@ body {
 .nav-mark { display: flex; align-items: baseline; gap: 0; line-height: 1; cursor: pointer; }
 .nav-g { font-family: 'Satoshi', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: -0.01em; color: var(--orange); }
 .nav-drury { font-family: 'Satoshi', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: -0.01em; color: var(--ink); transition: color 0.4s; }
-.nav-center { display: flex; justify-content: center; }
+.nav-center { display: flex; justify-content: center; align-items: center; }
 .nav-right  { display: flex; justify-content: flex-end; align-items: center; gap: 22px; }
 .nav-links  { display: flex; gap: 22px; list-style: none; align-items: center; }
 .nav-links li span {
@@ -146,28 +146,58 @@ body {
 }
 
 /* ── THEME DIAL ── */
-/* dial knob colour: dark grey in light mode, clearly visible mid-grey in dark */
-:root          { --dial-knob: #0E0D0C; }
-[data-theme="dark"] { --dial-knob: #3C3835; }
+/* ── theme dial ──────────────────────────────────────────── */
 
-/* theme dial — fixed-width flanks prevent layout shift; user-select stops text highlight */
+/* knob fill: near-black in light, clearly-visible grey in dark  */
+:root                { --dial-knob: #0E0D0C; }
+[data-theme="dark"]  { --dial-knob: #3A3632; }
+
+/* container: inline-flex so it never stretches beyond its content */
 .theme-dial {
-  display: flex; align-items: center; gap: 8px;
-  user-select: none; -webkit-user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  -webkit-user-select: none;
+  user-select: none;
 }
+
+/* icon: fixed width prevents horizontal shift as ☀/☽/★ swap   */
 .nd-icon {
-  font-size: 13px; color: var(--orange); line-height: 1;
-  width: 18px; text-align: center; display: inline-block; flex-shrink: 0;
-  user-select: none; -webkit-user-select: none;
+  flex: 0 0 18px;
+  width: 18px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1;
+  color: #E85D00;
+  -webkit-user-select: none;
+  user-select: none;
 }
+
+/* label: EXACTLY matches .nav-links li span                     */
+/* fixed 46px — wide enough for 'Light' (longest word)          */
 .nd-label {
-  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 300;
-  letter-spacing: 0.18em; text-transform: uppercase; color: var(--orange);
-  width: 46px; display: inline-block; flex-shrink: 0;
-  user-select: none; -webkit-user-select: none;
+  flex: 0 0 46px;
+  width: 46px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #E85D00;
+  -webkit-user-select: none;
+  user-select: none;
 }
-.nd-arc  { stroke: var(--border); fill: none; stroke-linecap: round; }
-.nd-pm   { fill: rgba(14,13,12,0.22); }
+
+/* arc: visible at 0.25 opacity, theme-aware                     */
+.nd-arc                    { fill: none; stroke: rgba(14,13,12,0.28); stroke-linecap: round; }
+[data-theme="dark"] .nd-arc { stroke: rgba(240,235,227,0.28); }
+
+/* position dots: theme-aware inactive; JS sets orange + r=3 when active */
+.nd-pm                    { fill: rgba(14,13,12,0.22); }
 [data-theme="dark"] .nd-pm { fill: rgba(240,235,227,0.22); }
+
+/* knob body colour from CSS var; indicator dot is inline fill="#F0EBE3" */
 .nd-body { fill: var(--dial-knob); stroke: var(--border); stroke-width: 0.5px; }
+
+/* rotate around the knob group's own bounding-box centre (≈ local 0,0) */
 #nd-knob { transform-origin: center center; }

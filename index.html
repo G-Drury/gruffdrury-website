@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+  <script>(function(){var t=parseInt(localStorage.getItem('griff-theme'),10)||0;if(t===1)document.documentElement.setAttribute('data-theme','dark');})()</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Griff Drury — Designer & Maker</title>
 <meta name="description" content="Gruffudd Drury — Designer and maker working across brand, UX, spatial design, and physical craft. Based in the UK.">
@@ -326,19 +327,21 @@ html, body, *, *::before, *::after { cursor: none !important; }
       </div>
       <div class="nav-center">
         <div class="theme-dial" id="theme-dial" onclick="advTheme()">
-    <span class="nd-icon" id="nd-icon">&#x2600;</span>
-    <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-      <path class="nd-arc" fill="none" d="M 5.25,9.68 A 18,18,0,0,1,20,2 A 18,18,0,0,1,34.75,9.68" stroke-width="1.5"/>
-      <circle class="nd-pm" id="nd-pm0" cx="5.25" cy="9.68" r="2.5"/>
-      <circle class="nd-pm" id="nd-pm1" cx="20"   cy="2"    r="2.5"/>
-      <circle class="nd-pm" id="nd-pm2" cx="34.75" cy="9.68" r="2.5"/>
-      <g transform="translate(20,20)"><g id="nd-knob">
-        <circle class="nd-body" cx="0" cy="0" r="13"/>
-        <circle cx="0" cy="-10" r="2.2" fill="#F0EBE3"/>
-      </g></g>
-    </svg>
-    <span class="nd-label" id="nd-label">Light</span>
-  </div>
+      <span class="nd-icon" id="nd-icon">&#x2600;</span>
+      <svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
+        <path class="nd-arc" fill="none"
+              d="M 5.71,9.40 A 15,15,0,0,1,18,3 A 15,15,0,0,1,30.29,9.40"
+              stroke-width="1.5"/>
+        <circle class="nd-pm" id="nd-pm0" cx="5.71"  cy="9.40" r="2.2"/>
+        <circle class="nd-pm" id="nd-pm1" cx="18"    cy="3"    r="2.2"/>
+        <circle class="nd-pm" id="nd-pm2" cx="30.29" cy="9.40" r="2.2"/>
+        <g transform="translate(18,18)"><g id="nd-knob">
+          <circle class="nd-body" cx="0" cy="0" r="11"/>
+          <circle cx="0" cy="-9" r="2" fill="#F0EBE3"/>
+        </g></g>
+      </svg>
+      <span class="nd-label" id="nd-label">Light</span>
+    </div>
       </div>
       <div class="nav-right">
         <ul class="nav-links">
@@ -839,41 +842,51 @@ html, body, *, *::before, *::after { cursor: none !important; }
    FUNCTIONAL JS (retained from live site)
 ═══════════════════════════════════════════════════════════ */
 
-/* ── THEME DIAL — always clockwise ── */
+/* ── theme dial ── */
 (function(){
-  const MODES=['Light','Dark','Fun'], ICONS=['☀','☽','★'];
-  const INC=[55,55,250], DURS=[0.44,0.44,0.9];
-  let st=0, ang=-55;
-  const saved=localStorage.getItem('griff-theme');
-  if(saved==='1'){st=1;ang=0;document.documentElement.setAttribute('data-theme','dark');}
-  else if(saved==='2'){st=2;ang=55;}
-  function updateUI(){
-    const ic=document.getElementById('nd-icon'), lb=document.getElementById('nd-label');
-    if(ic) ic.textContent=ICONS[st]; if(lb) lb.textContent=MODES[st];
-    [0,1,2].forEach(j=>{
-      const pm=document.getElementById('nd-pm'+j); if(!pm) return;
-      if(j===st){pm.setAttribute('fill','#E85D00');pm.setAttribute('r','2.8');}
-      else{pm.removeAttribute('fill');pm.setAttribute('r','2');}
-    });
+  var MODES=['Light','Dark','Fun'];
+  var ICONS=['☀','☽','★'];      /* ☀ ☽ ★ */
+  var INC=[55,55,250], DUR=[0.44,0.44,0.9];  /* clockwise increments + durations */
+  var st=0, ang=-55;
+
+  /* restore saved mode — applied immediately to avoid flash */
+  var saved=parseInt(localStorage.getItem('griff-theme'),10)||0;
+  if(saved===1){st=1;ang=0;document.documentElement.setAttribute('data-theme','dark');}
+  else if(saved===2){st=2;ang=55;}
+
+  function setKnob(duration){
+    var k=document.getElementById('nd-knob');
+    if(!k) return;
+    k.style.transition = duration ? 'transform '+duration+'s cubic-bezier(0.34,1.08,0.64,1)' : 'none';
+    k.style.transform  = 'rotate('+ang+'deg)';
   }
-  function syncKnob(){
-    const k=document.getElementById('nd-knob'); if(!k) return;
-    k.style.transition='none';
-    k.style.transform=`rotate(${ang}deg)`;
-    setTimeout(()=>{k.style.transition='';},60);
-  }
-  window.advTheme=function(){
-    const prev=st; ang+=INC[prev]; st=(st+1)%3;
-    const k=document.getElementById('nd-knob');
-    if(k){
-      k.style.transition=`transform ${DURS[prev]}s cubic-bezier(0.34,1.08,0.64,1)`;
-      k.style.transform=`rotate(${ang}deg)`;
+
+  function renderUI(){
+    var ic=document.getElementById('nd-icon');
+    var lb=document.getElementById('nd-label');
+    if(ic) ic.textContent=ICONS[st];
+    if(lb) lb.textContent=MODES[st];
+    for(var j=0;j<3;j++){
+      var pm=document.getElementById('nd-pm'+j);
+      if(!pm) continue;
+      if(j===st){ pm.setAttribute('fill','#E85D00'); pm.setAttribute('r','3'); }
+      else       { pm.removeAttribute('fill');        pm.setAttribute('r','2.2'); }
     }
+  }
+
+  window.advTheme=function(){
+    var prev=st;
+    ang+=INC[prev]; st=(st+1)%3;
+    setKnob(DUR[prev]);
     if(st===1) document.documentElement.setAttribute('data-theme','dark');
-    else document.documentElement.removeAttribute('data-theme');
-    localStorage.setItem('griff-theme',st); updateUI();
+    else       document.documentElement.removeAttribute('data-theme');
+    localStorage.setItem('griff-theme',st);
+    renderUI();
   };
-  syncKnob(); updateUI();
+
+  /* init without animation */
+  setKnob(0);
+  renderUI();
 })();
 
 /* Work overlay */
