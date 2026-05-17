@@ -147,81 +147,33 @@ body {
 }
 
 /* ── THEME DIAL ── */
-/* ── theme dial ──────────────────────────────────────────────────── */
+/* ── theme dial ─────────────────────────────────────────────────── */
 
-/* knob colour: near-black light / visible mid-grey dark */
+/* dial knob fill: near-black light, visible grey dark */
 :root               { --dial-knob: #0E0D0C; }
 [data-theme="dark"] { --dial-knob: #3A3632; }
 
-/* outer flex row — icon | anchor | label                              */
-.theme-dial {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  -webkit-user-select: none;
-  user-select: none;
-}
+/* floating dial: fixed, centred on viewport, never in nav DOM */
+#dial-float { position:fixed; top:0; left:50%; transform:translate(-50%,4px);
+  width:80px; height:80px; z-index:501; pointer-events:none; overflow:visible; }
+#arc-svg { position:absolute; top:0; left:0; width:80px; height:80px;
+  overflow:visible; pointer-events:none; z-index:2; }
+#nd-arc { fill:none; stroke-linecap:round; stroke-width:1.4;
+  stroke:rgba(14,13,12,.28); }
+[data-theme="dark"] #nd-arc { stroke:rgba(240,235,227,.28); }
+#nd-knob { position:absolute; width:48px; height:48px; top:16px; left:16px;
+  border-radius:50%; background:var(--dial-knob); border:.5px solid var(--border);
+  transition:background .4s, border-color .4s, transform .44s cubic-bezier(.34,1.08,.64,1);
+  z-index:1; pointer-events:all; }
+#nd-indicator { position:absolute; width:4.4px; height:4.4px; border-radius:50%;
+  background:#F0EBE3; top:5px; left:50%; margin-left:-2.2px; }
 
-/* icon: 40px right-aligned so symbol sits close to knob               */
-.nd-icon {
-  flex: 0 0 40px;
-  width: 40px;
-  text-align: right;
-  font-size: 13px;
-  line-height: 1;
-  color: #E85D00;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-/* label: 40px left-aligned, matches nav links exactly                  */
-.nd-label {
-  flex: 0 0 40px;
-  width: 40px;
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  font-weight: 300;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #E85D00;
-  text-align: left;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-/* anchor: same width as SVG, HEIGHT = 1px so it NEVER inflates the nav.
-   SVG inside is position:absolute — completely out of layout flow.      */
-.nd-knob-anchor {
-  position: relative;
-  flex: 0 0 64px;
-  width: 64px;
-  height: 1px;
-  overflow: visible;
-}
-
-/* SVG: absolutely positioned; translateY offsets it so the knob hangs
-   22px below the nav border while the arc sits within the nav.          */
-.nd-knob-anchor svg {
-  position: absolute;
-  top: 50%;                        /* 0.5px from anchor top */
-  left: 0;                         /* anchor width = SVG width, so left=0 is correct */
-  transform: translateY(calc(-50% + 12px));  /* -32+12 = -20px → SVG top at ~3px in nav */
-  display: block;
-  overflow: visible;
-  width: 64px;
-  height: 64px;
-}
-
-/* arc: visible and theme-aware */
-.nd-arc                     { fill: none; stroke: rgba(14,13,12,0.30); stroke-linecap: round; }
-[data-theme="dark"] .nd-arc { stroke: rgba(240,235,227,0.30); }
-
-/* position dots: clickable; JS overrides fill+r on active dot */
-.nd-pm                     { fill: rgba(14,13,12,0.28); pointer-events: all; }
-[data-theme="dark"] .nd-pm { fill: rgba(240,235,227,0.28); }
-
-/* knob body */
-.nd-body { fill: var(--dial-knob); stroke: var(--border); stroke-width: 0.5px; }
-
-/* rotation — translate(32,32) group means local origin = knob centre */
-#nd-knob { transform-origin: center center; }
+/* nav dial row: icon + spacer + label */
+.theme-dial { display:inline-flex; align-items:center; gap:8px;
+  user-select:none; -webkit-user-select:none; }
+.nd-icon  { flex:0 0 36px; width:36px; text-align:right;
+  font-size:13px; line-height:1; color:var(--orange); }
+.nd-gap   { flex:0 0 80px; width:80px; height:1px; }
+.nd-label { flex:0 0 36px; width:36px; text-align:left;
+  font-family:'DM Mono',monospace; font-size:10px; font-weight:300;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--orange); }

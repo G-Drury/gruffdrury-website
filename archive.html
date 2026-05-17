@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-  <script>(function(){var t=parseInt(localStorage.getItem('griff-theme'),10)||0;if(t===1)document.documentElement.setAttribute('data-theme','dark');})()</script>
+  <script>(function(){var t=+localStorage.getItem('gd-t')||0;if(t===1)document.documentElement.setAttribute('data-theme','dark');})()</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Archive — Griff Drury</title>
 <meta name="description" content="Full archive of work by Gruffudd Drury — Graphic & Brand, UX & Digital, Material & Object, Research & Writing, Drawing Practice.">
@@ -169,6 +169,18 @@ html, body, *, *::before, *::after { cursor: none !important; }
 
 <div id="cur"></div>
 
+<div id="dial-float">
+  <svg id="arc-svg" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+    <path id="nd-arc" d="M 15.43,22.79 A 30,30,0,0,1,40,10 A 30,30,0,0,1,64.57,22.79"/>
+    <circle class="nd-pm" id="nd-pm0" cx="15.43" cy="22.79" r="3" fill="rgba(14,13,12,.55)" onclick="setTheme(0);event.stopPropagation();" style="pointer-events:all;"/>
+    <circle class="nd-pm" id="nd-pm1" cx="40" cy="10" r="3" fill="rgba(14,13,12,.55)" onclick="setTheme(1);event.stopPropagation();" style="pointer-events:all;"/>
+    <circle class="nd-pm" id="nd-pm2" cx="64.57" cy="22.79" r="3" fill="rgba(14,13,12,.55)" onclick="setTheme(2);event.stopPropagation();" style="pointer-events:all;"/>
+  </svg>
+  <div id="nd-knob" onclick="advTheme()">
+    <div id="nd-indicator"></div>
+  </div>
+</div>
+
 <div class="side-dot" id="side-dot">
   <div class="sd-line"></div><div class="sd-dot"></div>
   <div class="sd-lbl">Nav</div><div class="sd-line"></div>
@@ -200,26 +212,9 @@ html, body, *, *::before, *::after { cursor: none !important; }
     <span class="nav-g">G.</span><span class="nav-drury">Drury</span>
   </div>
   <div class="nav-center">
-    <div class="theme-dial" id="theme-dial">
+    <div class="theme-dial">
       <span class="nd-icon" id="nd-icon" onclick="advTheme()">&#x2600;</span>
-      <div class="nd-knob-anchor">
-        <svg width="64" height="64" viewBox="0 0 64 64"
-             xmlns="http://www.w3.org/2000/svg">
-          <path class="nd-arc" fill="none"
-                d="M 5.79,13.65 A 32,32,0,0,1,32,0 A 32,32,0,0,1,58.21,13.65"
-                stroke-width="1.5"/>
-          <circle class="nd-pm" id="nd-pm0" cx="5.79"  cy="13.65" r="3"
-                  onclick="setTheme(0);event.stopPropagation();"/>
-          <circle class="nd-pm" id="nd-pm1" cx="32"    cy="0"     r="3"
-                  onclick="setTheme(1);event.stopPropagation();"/>
-          <circle class="nd-pm" id="nd-pm2" cx="58.21" cy="13.65" r="3"
-                  onclick="setTheme(2);event.stopPropagation();"/>
-          <g transform="translate(32,32)"><g id="nd-knob" onclick="advTheme()">
-            <circle class="nd-body" cx="0" cy="0" r="26"/>
-            <circle cx="0" cy="-20" r="2.5" fill="#F0EBE3"/>
-          </g></g>
-        </svg>
-      </div>
+      <span class="nd-gap"></span>
       <span class="nd-label" id="nd-label" onclick="advTheme()">Light</span>
     </div>
   </div>
@@ -331,70 +326,65 @@ document.addEventListener('mouseup', () => { curEl.style.transform = 'translate(
 /* ── theme dial ── */
 (function(){
   var MODES=['Light','Dark','Fun'];
-  var ICONS=['\u2600','\u263d','\u2605'];   /* ☀ ☽ ★ */
-  var INC=[55,55,250];                      /* clockwise deg per state */
+  var ICONS=['\u2600','\u263d','\u2605'];
+  var INC=[55,55,250];
+  var DOT_R=3, DOT_R_ACTIVE=4;
   var st=0, ang=-55;
 
-  /* apply saved theme before first paint */
-  var saved=parseInt(localStorage.getItem('griff-theme'),10)||0;
+  var saved=+localStorage.getItem('gd-t')||0;
   if(saved===1){st=1;ang=0;document.documentElement.setAttribute('data-theme','dark');}
   else if(saved===2){st=2;ang=55;}
 
-  function rotate(degrees, duration){
-    var k=document.getElementById('nd-knob');
-    if(!k) return;
-    k.style.transition = duration
-      ? 'transform '+duration+'s cubic-bezier(0.34,1.08,0.64,1)'
-      : 'none';
-    k.style.transform = 'rotate('+ang+'deg)';
+  function dotColor(active){
+    var dark=document.documentElement.getAttribute('data-theme')==='dark';
+    if(active) return '#E85D00';
+    return dark?'rgba(240,235,227,.55)':'rgba(14,13,12,.55)';
   }
 
-  function applyTheme(){
-    if(st===1) document.documentElement.setAttribute('data-theme','dark');
-    else       document.documentElement.removeAttribute('data-theme');
-    localStorage.setItem('griff-theme',st);
+  function rotateKnob(dur){
+    var k=document.getElementById('nd-knob');
+    if(!k) return;
+    if(dur){k.style.transition='transform '+dur+'s cubic-bezier(0.34,1.08,0.64,1)';}
+    else{k.style.transition='none';}
+    k.style.transform='rotate('+ang+'deg)';
   }
 
   function renderUI(){
+    for(var j=0;j<3;j++){
+      var pm=document.getElementById('nd-pm'+j);
+      if(!pm) continue;
+      pm.style.fill=dotColor(j===st);
+      pm.setAttribute('r',j===st?DOT_R_ACTIVE:DOT_R);
+    }
     var ic=document.getElementById('nd-icon');
     var lb=document.getElementById('nd-label');
     if(ic) ic.textContent=ICONS[st];
     if(lb) lb.textContent=MODES[st];
-    for(var j=0;j<3;j++){
-      var pm=document.getElementById('nd-pm'+j);
-      if(!pm) continue;
-      if(j===st){ pm.setAttribute('fill','#E85D00'); pm.setAttribute('r','4'); }
-      else       { pm.removeAttribute('fill');        pm.setAttribute('r','3'); }
-    }
   }
 
-  /* cycle one step clockwise */
+  function applyTheme(){
+    if(st===1) document.documentElement.setAttribute('data-theme','dark');
+    else document.documentElement.removeAttribute('data-theme');
+    localStorage.setItem('gd-t',st);
+    renderUI();
+  }
+
   window.advTheme=function(){
-    var prev=st;
-    ang+=INC[prev]; st=(st+1)%3;
-    rotate(INC[prev]===250 ? 0.9 : 0.44);
-    applyTheme(); renderUI();
+    var prev=st;ang+=INC[prev];st=(st+1)%3;
+    rotateKnob(INC[prev]===250?0.9:0.44);
+    applyTheme();
   };
 
-  /* jump clockwise to a specific mode — used by arc dot clicks */
   window.setTheme=function(target){
     if(target===st) return;
-    /* count clockwise steps */
-    var steps=0, tmp=st;
-    while(tmp!==target && steps<3){ tmp=(tmp+1)%3; steps++; }
-    /* accumulate angle for each step */
-    tmp=st;
-    var totalDeg=0;
-    for(var i=0;i<steps;i++){ totalDeg+=INC[tmp]; tmp=(tmp+1)%3; }
-    ang+=totalDeg; st=target;
-    /* duration scales with degrees travelled */
-    var dur=Math.max(0.44, totalDeg/280*0.9);
-    rotate(dur);
-    applyTheme(); renderUI();
+    var deg=0,tmp=st,n=0;
+    while(tmp!==target&&n<3){deg+=INC[tmp];tmp=(tmp+1)%3;n++;}
+    ang+=deg;st=target;
+    rotateKnob(Math.max(0.44,deg/280*0.9));
+    applyTheme();
   };
 
-  /* init: set rotation without animation */
-  rotate(0);
+  rotateKnob(0);
   renderUI();
 })();
   document.querySelectorAll('a, button, .proj-row, .disc-item, .snav-sec-item, .snav-proj-item, .side-dot, .disc-arrow').forEach(el => {
@@ -607,6 +597,19 @@ document.addEventListener('keydown', e => {
 });
 
 init();
+
+/* cursor hover: orange on interactive elements */
+function setHover(on){
+  var c=document.getElementById('cur');
+  if(!c) return;
+  c.style.background=on?'#E85D00':'#fff';
+  c.style.mixBlendMode=on?'normal':'difference';
+  c.style.width=c.style.height=on?'9px':'8px';
+}
+document.querySelectorAll('.nav-link,.nav-links li span,.nav-links a,.nd-icon,.nd-label,.nd-pm,#nd-knob').forEach(function(el){
+  el.addEventListener('mouseenter',function(){setHover(true);});
+  el.addEventListener('mouseleave',function(){setHover(false);});
+});
 </script>
 </body>
 </html>
