@@ -169,11 +169,7 @@ body {
   background:#F0EBE3; top:5px; left:50%; margin-left:-2.2px; }
 
 /* nav dial row: icon + spacer + label */
-.theme-dial { display:inline-flex; align-items:center; gap:8px;
-  user-select:none; -webkit-user-select:none; }
-.nd-icon  { flex:0 0 36px; width:36px; text-align:right;
-  font-size:13px; line-height:1; color:var(--orange); }
-.nd-gap   { flex:0 0 80px; width:80px; height:1px; }
-.nd-label { flex:0 0 36px; width:36px; text-align:left;
-  font-family:'DM Mono',monospace; font-size:10px; font-weight:300;
-  letter-spacing:.18em; text-transform:uppercase; color:var(--orange); }
+
+.nd-icon { position:absolute; right:calc(100% + 8px); top:10px; font-size:13px; line-height:1; color:var(--orange); pointer-events:all; white-space:nowrap; user-select:none; -webkit-user-select:none; }
+
+.nd-label { position:absolute; left:calc(100% + 8px); top:11px; font-family:'DM Mono',monospace; font-size:10px; font-weight:300; letter-spacing:.18em; text-transform:uppercase; color:var(--orange); pointer-events:all; white-space:nowrap; user-select:none; -webkit-user-select:none; }

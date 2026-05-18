@@ -32,13 +32,16 @@ html, body, *, *::before, *::after { cursor: none !important; }
 #nd-knob{position:absolute;width:48px;height:48px;top:16px;left:16px;border-radius:50%;background:#0E0D0C;border:.5px solid rgba(14,13,12,.09);transition:background .4s,border-color .4s,transform .44s cubic-bezier(.34,1.08,.64,1);z-index:1;pointer-events:all;}
 [data-theme="dark"] #nd-knob{background:#3A3632;border-color:rgba(255,255,255,.07);}
 #nd-indicator{position:absolute;width:4.4px;height:4.4px;border-radius:50%;background:#F0EBE3;top:5px;left:50%;margin-left:-2.2px;}
-.nd-icon{color:#E85D00;}.nd-label{color:#E85D00;}
+/* icon + label: absolutely positioned INSIDE dial-float, flanking the dial at nav text height */
+.nd-icon{position:absolute;right:calc(100% + 8px);top:10px;font-size:13px;line-height:1;color:#E85D00;pointer-events:all;white-space:nowrap;user-select:none;-webkit-user-select:none;}
+.nd-label{position:absolute;left:calc(100% + 8px);top:11px;font-family:'DM Mono','Courier New',monospace;font-size:10px;font-weight:300;letter-spacing:.18em;text-transform:uppercase;color:#E85D00;pointer-events:all;white-space:nowrap;user-select:none;-webkit-user-select:none;}
 </style>
 </head>
 <body>
 <div id="cur"></div>
 
 <div id="dial-float">
+  <span class="nd-icon" id="nd-icon" onclick="advTheme()">&#x2600;</span>
   <svg id="arc-svg" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
     <path id="nd-arc" d="M 15.43,22.79 A 30,30,0,0,1,40,10 A 30,30,0,0,1,64.57,22.79"/>
     <circle class="nd-pm" id="nd-pm0" cx="15.43" cy="22.79" r="3" fill="rgba(14,13,12,.55)" onclick="setTheme(0);event.stopPropagation();" style="pointer-events:all;"/>
@@ -48,18 +51,13 @@ html, body, *, *::before, *::after { cursor: none !important; }
   <div id="nd-knob" onclick="advTheme()">
     <div id="nd-indicator"></div>
   </div>
+  <span class="nd-label" id="nd-label" onclick="advTheme()">Light</span>
 </div>
 <nav class="top-nav">
   <div class="nav-mark" onclick="window.location.href='index.html'">
     <span class="nav-g">G.</span><span class="nav-drury">Drury</span>
   </div>
-  <div class="nav-center">
-    <div class="theme-dial">
-      <span class="nd-icon" id="nd-icon" onclick="advTheme()">&#x2600;</span>
-      <span class="nd-gap"></span>
-      <span class="nd-label" id="nd-label" onclick="advTheme()">Light</span>
-    </div>
-  </div>
+  <div class="nav-center"></div>
   <div class="nav-right">
     <ul class="nav-links">
       <li><span onclick="window.location.href='index.html'">← Home</span></li>
