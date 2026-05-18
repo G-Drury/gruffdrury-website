@@ -194,7 +194,6 @@ html, body, *, *::before, *::after { cursor: none !important; }
   </div>
   <span class="nd-label" id="nd-label" onclick="advTheme()">Light</span>
 </div>
-</div>
 
 <div class="side-dot" id="side-dot">
   <div class="sd-line"></div><div class="sd-dot"></div>
@@ -220,6 +219,7 @@ html, body, *, *::before, *::after { cursor: none !important; }
       <div class="snav-proj-scroll" id="snav-proj-scroll"></div>
     </div>
   </div>
+</div>
 <nav class="top-nav">
   <div class="nav-mark" onclick="window.location.href='index.html'">
     <span class="nav-g">G.</span><span class="nav-drury">Drury</span>
@@ -590,11 +590,6 @@ function closeSNav() {
 document.getElementById('side-dot').addEventListener('click', openSNav);
 document.getElementById('snav-close').addEventListener('click', closeSNav);
 document.getElementById('snav-bd').addEventListener('click', e => { if (e.target === document.getElementById('snav-bd')) closeSNav(); });
-
-/* ── THEME ── */
-document.getElementById('theme-dial').addEventListener('click', () => {
-  window.advTheme();
-});
 
 /* ── KEYBOARD ── */
 document.addEventListener('keydown', e => {
