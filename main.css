@@ -155,7 +155,7 @@ body {
 
 /* floating dial: fixed, centred on viewport, never in nav DOM */
 #dial-float { position:fixed; top:0; left:50%; transform:translate(-50%,4px);
-  width:80px; height:80px; z-index:501; pointer-events:none; overflow:visible; }
+  width:80px; height:80px; z-index:9998; pointer-events:none; overflow:visible; }
 #arc-svg { position:absolute; top:0; left:0; width:80px; height:80px;
   overflow:visible; pointer-events:none; z-index:2; }
 #nd-arc { fill:none; stroke-linecap:round; stroke-width:1.4;

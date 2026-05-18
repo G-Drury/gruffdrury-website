@@ -163,6 +163,16 @@ html, body, *, *::before, *::after { cursor: none !important; }
   transform: translate(-50%,-50%); mix-blend-mode: difference;
   transition: transform .12s cubic-bezier(.34,1.56,.64,1);
 }
+
+/* dial inline */
+#dial-float{position:fixed;top:0;left:50%;transform:translate(-50%,4px);width:80px;height:80px;z-index:9998;pointer-events:none;overflow:visible;}
+#arc-svg{position:absolute;top:0;left:0;width:80px;height:80px;overflow:visible;pointer-events:none;z-index:2;}
+#nd-arc{fill:none;stroke-linecap:round;stroke-width:1.4;stroke:rgba(14,13,12,.28);}
+[data-theme="dark"] #nd-arc{stroke:rgba(240,235,227,.28);}
+#nd-knob{position:absolute;width:48px;height:48px;top:16px;left:16px;border-radius:50%;background:#0E0D0C;border:.5px solid rgba(14,13,12,.09);transition:background .4s,border-color .4s,transform .44s cubic-bezier(.34,1.08,.64,1);z-index:1;pointer-events:all;}
+[data-theme="dark"] #nd-knob{background:#3A3632;border-color:rgba(255,255,255,.07);}
+#nd-indicator{position:absolute;width:4.4px;height:4.4px;border-radius:50%;background:#F0EBE3;top:5px;left:50%;margin-left:-2.2px;}
+.nd-icon{color:#E85D00;}.nd-label{color:#E85D00;}
 </style>
 </head>
 <body>
