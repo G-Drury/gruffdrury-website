@@ -1,123 +1,76 @@
-# gruffdrury.website
+# Gruff Drury — Pill Nav Integration
 
-Portfolio site for Griff Drury — Designer & Maker.
+This package adds the new pill-based navigation system to the existing site
+without touching the homepage parallax, the portfolio (formerly archive) page
+content, or the dial system.
 
-## File structure
+## What changed
 
-```
-gruffdrury-site/
-├── index.html       ← Homepage
-├── archive.html     ← Full work archive (two-axis navigation)
-├── about.html       ← About page (placeholder)
-├── contact.html     ← Contact page (placeholder)
-├── css/
-│   └── main.css     ← Shared design system
-└── images/          ← Add your images here (create this folder)
-    ├── escape-01.jpg
-    ├── ripe-01.jpg
-    └── ...
-```
+### File renames
+- `archive.html` → `portfolio.html` (content unchanged; this is the existing
+  discipline-based two-axis archive you've been using)
 
-## Adding images
+### New files
+- `archive.html` — the new disc-nav archive (built from `fun-mode-demo-v24.html`)
+- `js/nav-menu.js` — shared menu logic + theme sync between dial and disc-nav
 
-Replace placeholder colour classes in the HTML with actual image paths.
-In archive.html, find the `PROJ` data object and update the `imgs` arrays.
+### Modified files
+- `index.html` — nav-right now has `<button id="btn-menu">menu</button>` instead
+  of the Work/About/Contact links. Old `#w-overlay` markup removed. Dial
+  IIFE, parallax, cards, and everything else untouched.
+- `portfolio.html` — same nav swap. All page content preserved verbatim.
+- `about.html`, `contact.html` — same nav swap.
+- `css/main.css` — appended `.mpill`, `#menu-overlay`, `#btn-menu` styles.
 
-Example — change:
-```js
-imgs: ['c1', 'c1', 'c1']
-```
-To:
-```js
-imgs: ['images/escape-01.jpg', 'images/escape-02.jpg', 'images/escape-03.jpg']
-```
+## How it works
 
-Then in the `projHTML` function, update the `.proj-img` divs to use
-`background-image` instead of the placeholder class.
+### Dial + menu coexistence
+The dial owns the theme state via `localStorage['gd-t']` (0/1/2). It sets
+`data-theme="dark"` for state 1 and removes the attribute for states 0/2.
 
-## Deploying to GitHub Pages (free hosting)
+`nav-menu.js` reads `gd-t` and writes `data-theme` as `light` / `dark` / `fun`
+on every load and whenever the dial mutates the attribute. This keeps the
+disc-nav archive's theme-aware colours in sync without any change to the dial
+IIFE. The sync is guarded against MutationObserver loops by only setting the
+attribute when its value would actually change.
 
-### Step 1 — Create a GitHub account
-Go to github.com and sign up if you don't have an account.
+### Pill menu
+Clicking `#btn-menu` calls `menuToggle()` from `nav-menu.js`. The menu DOM
+(`#menu-overlay`, `#menu-list`) is injected lazily on first open so pages
+don't need any extra markup beyond the trigger button.
 
-### Step 2 — Create a new repository
-- Click the + icon → New repository
-- Name it: `gruffdrury-website` (or anything you like)
-- Set it to Public
-- Click Create repository
+Pill colours come from `NAV_ITEMS` in `nav-menu.js` — each entry has
+`fun`/`dark`/`light` hex values. Pills repaint live when the theme changes.
 
-### Step 3 — Upload your files
-Option A (easiest — drag and drop in browser):
-- On the repository page, click "uploading an existing file"
-- Drag the entire contents of this folder into the upload area
-- Important: upload the css/ folder too, keeping the folder structure
-- Click Commit changes
+### Archive page
+`archive.html` is a self-contained page hosting the disc-nav from
+`fun-mode-demo-v24.html`. Differences from the demo:
+- Site nav (G.Drury + dial + menu) at top instead of demo's placeholder
+- Archive area sits below the nav (`top: 44px`) instead of full-viewport overlay
+- `archiveOpen` / `archiveClose` overridden — the archive is always open on
+  this page; `close ✕` navigates back via `history.back()`
+- Demo's own menu logic stubbed out; `nav-menu.js` owns the menu
+- `toggleTheme` bridges to the dial's `advTheme()`
 
-Option B (using Git command line):
-```bash
-cd gruffdrury-site
-git init
-git add .
-git commit -m "Initial site"
-git remote add origin https://github.com/YOURUSERNAME/gruffdrury-website.git
-git push -u origin main
-```
+The demo JS is kept verbatim. All differences are appended at the end of the
+script block as overrides (last function declaration wins in JavaScript).
 
-### Step 4 — Enable GitHub Pages
-- Go to your repository → Settings → Pages
-- Under Source, select: Deploy from branch
-- Branch: main, folder: / (root)
-- Click Save
-- Wait ~60 seconds, then your site is live at:
-  https://YOURUSERNAME.github.io/gruffdrury-website/
+## Deployment
 
-### Step 5 — Connect your custom domain (gruffdrury.website)
+1. Drop the entire contents of this folder into your repo, preserving the
+   `css/` and `js/` subdirectories.
+2. Commit and push. GitHub Pages will rebuild in ~60s.
+3. Hard refresh (Cmd-Shift-R) to bypass cache.
 
-In GitHub:
-- Repository → Settings → Pages → Custom domain
-- Type: gruffdrury.website
-- Click Save
+## Notes for Claude Code handover
 
-In your domain registrar (wherever you bought gruffdrury.website):
-Add these DNS records:
+When you move to Claude Code for longer file/media work, the priorities are:
+- Real photography to replace placeholder colour blocks across the site
+- Individual project pages (`projects/escape.html` etc.) — link from sub-pills
+  in the new archive
+- Light mode styling for the homepage parallax (currently dark-first)
+- Fun mode visual design for index.html (currently uses light-mode visuals)
+- About and Contact page content
 
-Type: A — Name: @ — Value: 185.199.108.153
-Type: A — Name: @ — Value: 185.199.109.153
-Type: A — Name: @ — Value: 185.199.110.153
-Type: A — Name: @ — Value: 185.199.111.153
-Type: CNAME — Name: www — Value: YOURUSERNAME.github.io
-
-DNS changes can take up to 24 hours to propagate, but usually under 1 hour.
-GitHub will automatically provision an SSL certificate (https) once DNS resolves.
-
-## Updating the site after changes
-
-Every time you update files:
-
-Option A (drag and drop):
-- Go to the file in your GitHub repository
-- Click the pencil edit icon or re-upload
-
-Option B (command line — faster):
-```bash
-git add .
-git commit -m "Update description here"
-git push
-```
-The site updates within ~60 seconds of pushing.
-
-## Adding a new discipline section
-
-In archive.html, find the DISCS array and add a new entry:
-```js
-{ id:'newSection', label:'New Section Name', visible:true },
-```
-
-Then add the projects to the PROJ object:
-```js
-newSection: [
-  { id:'project1', title:'Project Name', year:'2025', tags:[...], desc:'...', imgs:[...] },
-]
-```
-
-To hide a section temporarily, set visible:false.
+The disc-nav data lives in `C.DISCS` inside `archive.html` (around line 580).
+Adding a project = adding an entry to one of the `proj` arrays.

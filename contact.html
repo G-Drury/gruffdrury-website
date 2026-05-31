@@ -59,12 +59,8 @@ html, body, *, *::before, *::after { cursor: none !important; }
   </div>
   <div class="nav-center"></div>
   <div class="nav-right">
-    <ul class="nav-links">
-      <li><span onclick="window.location.href='index.html'">← Home</span></li>
-      <li><span onclick="window.location.href='archive.html'">Work</span></li>
-      <li><span onclick="window.location.href='about.html'">About</span></li>
-    </ul>
-  </div>
+    <button id="btn-menu" onclick="menuToggle()">menu</button>
+      </div>
 </nav>
 <div class="contact-page">
   <h1 class="contact-page-title">Get in<br><span class="or">Touch</span></h1>
@@ -154,5 +150,7 @@ document.querySelectorAll('.nav-link,.nav-links li span,.nav-links a,.nd-icon,.n
   el.addEventListener('mouseleave',function(){setHover(false);});
 });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="js/nav-menu.js"></script>
 </body>
 </html>
