@@ -307,7 +307,7 @@ function menuClose(){
   gsap.timeline()
     .to(S.menuPills,{x:-offL,duration:0.20,ease:'power2.in',stagger:{each:0.05,from:'end'}},'<')
     .to('.top-nav',{y:0,duration:0.38,ease:'power3.inOut'},'-=0.06')
-    .to('#dial-float',{y:0,duration:0.38,ease:'power3.inOut'},'-=0.38')
+    .to('#dial-float',{y:4,duration:0.38,ease:'power3.inOut'},'-=0.38')
     .to('#menu-overlay',{height:0,duration:0.38,ease:'power3.inOut'},'-=0.38')
     .call(function(){document.getElementById('nav-pills-wrap').innerHTML='';S.menuPills=[];document.body.classList.remove('menu-state');});
 }
@@ -328,7 +328,7 @@ function archiveOpen(){
   gsap.timeline()
     .to('#menu-overlay',{height:'100vh',duration:0.50,ease:'power3.inOut'},0.08)
     .to('.top-nav',{y:'110vh',duration:0.50,ease:'power3.inOut'},0.08)
-    .to('#dial-float',{left:(window.innerWidth-108)+'px',top:(window.innerHeight-108)+'px',xPercent:0,x:0,y:0,duration:0.50,ease:'power3.inOut'},0.08)
+    .to('#dial-float',{left:(window.innerWidth-160)+'px',top:(window.innerHeight-108)+'px',xPercent:0,x:0,y:0,duration:0.50,ease:'power3.inOut'},0.08)
     .call(function(){
       computeLayout();
       document.getElementById('archive-area').classList.add('live');
@@ -528,9 +528,9 @@ function moveDial(dest){
   var dial = document.getElementById('dial-float');
   if(!dial) return;
   if(dest==='pin')
-    gsap.to(dial,{left:(window.innerWidth-108)+'px',top:'0px',xPercent:0,x:0,y:4,duration:0.9,ease:'power3.inOut'});
+    gsap.to(dial,{left:(window.innerWidth-160)+'px',top:'0px',xPercent:0,x:0,y:4,duration:0.9,ease:'power3.inOut'});
   else
-    gsap.to(dial,{left:(window.innerWidth-108)+'px',top:(window.innerHeight-108)+'px',
+    gsap.to(dial,{left:(window.innerWidth-160)+'px',top:(window.innerHeight-108)+'px',
       xPercent:0,x:0,y:0,duration:0.65,ease:'power3.inOut'});
 }
 
@@ -1100,6 +1100,32 @@ new MutationObserver(function(){
   }
 }).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 
+
+
+
+/* ── DIAL RESIZE HANDLER ─────────────────────────────────
+   When the archive is open, keep the dial pinned to the right wall
+   regardless of viewport size. Without this, the dial stays at the
+   pixel position set when archive opened, and a smaller window after
+   resize would put the dial off-screen or obscure its label.        */
+window.addEventListener('resize', function(){
+  if(!window.S || !window.S.archiveOpen) return;
+  var dial = document.getElementById('dial-float');
+  if(!dial || !window.gsap) return;
+  var targetLeft = (window.innerWidth - 160) + 'px';
+  var targetTop  = window.S.risen ? '0px' : (window.innerHeight - 160) + 'px';
+  /* When risen (project view), dial pins to top-right with y:4 to align with
+     nav-text baseline. Otherwise sits in bottom-right corner.               */
+  if(window.S.risen){
+    gsap.set(dial, {left: targetLeft, top: '0px', xPercent: 0, x: 0, y: 4});
+  } else {
+    gsap.set(dial, {left: targetLeft, top: (window.innerHeight - 108) + 'px',
+                    xPercent: 0, x: 0, y: 0});
+  }
+});
+
+/* Make S a window property so the resize handler can find it */
+window.S = S;
 
 /* ── toggleTheme bridge: demo's function cycles theme; we use the site dial ── */
 window.toggleTheme = function(){

@@ -359,9 +359,6 @@ html, body, *, *::before, *::after { cursor: none !important; }
 
     <!-- WORK OVERLAY (live site version) -->
     <!-- (work overlay removed — replaced by pill menu) -->
-        </div>
-      </div>
-    </div>
 
     <!-- HERO -->
     <section id="s-hero">
@@ -896,23 +893,7 @@ html, body, *, *::before, *::after { cursor: none !important; }
   renderUI();
 })();
 
-/* Work overlay */
-let workOpen = false;
-function toggleWork() {
-  workOpen = !workOpen;
-  document.getElementById('w-overlay').classList.toggle('open', workOpen);
-  document.getElementById('work-arrow').classList.toggle('flipped', workOpen);
-}
-function closeWork() {
-  workOpen = false;
-  document.getElementById('w-overlay').classList.remove('open');
-  document.getElementById('work-arrow').classList.remove('flipped');
-}
-function goToArchive(section) {
-  closeWork();
-  window.location.href = section ? 'archive.html?disc=' + section : 'archive.html';
-}
-
+/* (work-overlay functions removed — menu opens via menuToggle()) */
 /* Lightbox */
 const projects = [
   { tag:'Graphic & Brand',   title:"Escape — The Londoner's Underground", year:'2023', desc:'Redesigning the London Underground map to reveal hidden pathways, shortcuts and alternative routes.',         imgs:['c1','c1','c1'], page:'archive.html#graphic' },
@@ -951,7 +932,7 @@ function lbNav(dir) {
 }
 
 /* Escape key */
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeWork(); closeLB(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeLB(); } });
 
 /* cursor hover: orange on interactive elements */
 function setHover(on){
