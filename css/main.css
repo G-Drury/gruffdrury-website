@@ -174,13 +174,24 @@ body {
 
 .nd-label { position:absolute; left:calc(100% + 8px); top:11px; font-family:'DM Mono',monospace; font-size:10px; font-weight:300; letter-spacing:.18em; text-transform:uppercase; color:var(--orange); pointer-events:all; white-space:nowrap; user-select:none; -webkit-user-select:none; }
 
-/* ──────────────────────────────────────────────────────────────────
-   MENU DROPDOWN  ·  Pill-based site navigation
-   Sits below the existing nav; appears when #btn-menu is clicked.
-   Theme-aware colours are applied via JS (NAV_ITEMS in nav-menu.js).
-   ────────────────────────────────────────────────────────────────── */
 
-/* Menu trigger button — replaces the old Work / About / Contact links */
+/* ════════════════════════════════════════════════════════════════
+   MENU + ARCHIVE OVERLAY SYSTEM
+   Embedded on every page so the menu and archive are always accessible.
+   Z-index hierarchy:
+     #dial-float    9998   (always on top)
+     .top-nav        9300   (overridden below — above menu-overlay)
+     #archive-area  9160
+     #menu-overlay  9150
+   ════════════════════════════════════════════════════════════════ */
+
+/* Top nav: bump z to sit above menu/archive overlays ONLY while they're open.
+   This preserves the homepage's floating card layering during normal browsing
+   (floating cards z:500 remain ABOVE the resting nav z:20).                    */
+body.menu-state .top-nav,
+body.archive-state .top-nav{ z-index:9300 !important; }
+
+/* Menu trigger button — replaces old Work/About/Contact links */
 #btn-menu{
   font-family:'DM Mono',monospace; font-size:10px; font-weight:300;
   letter-spacing:0.22em; text-transform:uppercase;
@@ -192,63 +203,254 @@ body {
 #btn-menu:hover{ background:rgba(232,93,0,0.08); }
 [data-theme="dark"] #btn-menu{ color:#E85D00; border-color:rgba(232,93,0,0.40); }
 
-/* Background overlay (covers everything below the nav when menu open) */
+
+/* ── demo menu + archive overlay styles ── */
+
+:root,[data-theme="fun"]{
+  --page-bg:#121110;
+  --archive-bg:#E0AA32;
+  --disc-text:#E0AA32;
+  --overlay-bg:#E0AA32;  /* golden — matches archive */
+  --nav-fg-hi:rgba(240,237,232,.88);
+  --nav-fg-lo:rgba(255,255,255,.32);
+  --page-fg:rgba(192,189,184,1);
+}
+[data-theme="dark"]{
+  --page-bg:#0C0C0C;
+  --archive-bg:#0D0C0B;
+  --disc-text:#0D0C0B;
+  --overlay-bg:#0C0C0C;
+  --nav-fg-hi:rgba(240,237,232,.88);
+  --nav-fg-lo:rgba(255,255,255,.32);
+  --page-fg:rgba(192,189,184,1);
+}
+[data-theme="light"]{
+  --page-bg:#F5F2ED;
+  --archive-bg:#F5F2ED;
+  --disc-text:#F5F2ED;
+  --overlay-bg:#F5F2ED;
+  --nav-fg-hi:rgba(20,18,16,.88);
+  --nav-fg-lo:rgba(0,0,0,.38);
+  --page-fg:rgba(60,55,48,1);
+}
 #menu-overlay{
-  position:fixed; top:44px; left:0; right:0; bottom:0;
-  background:var(--bg);
-  opacity:0; pointer-events:none;
-  z-index:480;
-  transition:opacity 0.32s ease;
+  position:fixed;top:0;left:0;right:0;height:0;
+  overflow:hidden;background:var(--overlay-bg);z-index:9150;
 }
-#menu-overlay.open{ opacity:1; pointer-events:all; }
-[data-theme="fun"] #menu-overlay{ background:#E0AA32; }
-[data-theme="dark"] #menu-overlay{ background:#0C0C0C; }
-[data-theme="light"] #menu-overlay{ background:#F5F2ED; }
-
-/* Pill list container — stacked vertically, right-aligned to nav */
-#menu-list{
-  position:fixed; top:60px; right:0; left:0; bottom:0;
-  z-index:490; pointer-events:none;
-  display:flex; flex-direction:column-reverse;
-  align-items:flex-end; justify-content:flex-end;
-  gap:14px; padding:0 28px 56px;
+#menu-overlay::after{content:'';position:absolute;bottom:0;left:0;right:0;
+  height:.5px;background:rgba(0,0,0,.08);}
+#nav-pills-wrap{
+  position:absolute;
+  bottom:56px;    /* above the nav bar position */
+  left:-170px;    /* left end of pills stays off-screen */
 }
-#menu-list.open{ pointer-events:auto; }
-
-/* Individual menu pill — slides in from off-screen left, right end fixed near nav */
 .mpill{
-  position:relative;
-  height:36px;
-  width:calc(50vw + 170px);          /* extends well off-screen left */
-  display:flex; align-items:center; justify-content:flex-end;
-  opacity:0; transform:translateX(-60vw);
-  transition:filter 0.18s;
+  /* Width: visible portion to ~centre + 170px hidden on left */
+  width:calc(50vw + 170px);
+  height:28px;border-radius:14px;
+  margin-bottom:11px;
+  position:relative;overflow:hidden;cursor:pointer;
+  display:block;transform-origin:0% 50%;
 }
-.mpill:not(.future):hover{ filter:brightness(1.08); }
-.mpill.future{ opacity:0.42 !important; cursor:default; }
-
-.mpill-wrap{ width:100%; height:100%; position:relative; }
-.mpill-body{
-  width:100%; height:100%; border-radius:18px;
-  position:relative; background:#9D0877; /* default; overridden by JS */
-}
+.mpill.future{opacity:.38;cursor:default;}
 .mpill-lbl{
-  position:absolute; right:48px; top:50%; transform:translateY(-50%);
-  font-family:'DM Mono',monospace; font-size:14px; font-weight:300;
-  letter-spacing:0.12em; text-transform:uppercase;
-  color:var(--bg);                       /* cut-out — matches menu overlay */
-  white-space:nowrap; pointer-events:none;
+  position:absolute;right:30px;top:50%;transform:translateY(-50%);
+  font-family:'DM Mono',monospace;font-size:14px;font-weight:300;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--overlay-bg);white-space:nowrap;pointer-events:none;
 }
-[data-theme="fun"] .mpill-lbl{ color:#E0AA32; }
-[data-theme="dark"] .mpill-lbl{ color:#0C0C0C; }
-[data-theme="light"] .mpill-lbl{ color:#F5F2ED; }
+.mpill-cap{position:absolute;right:0;top:0;width:28px;height:28px;
+  border-radius:50%;background:rgba(0,0,0,.24);pointer-events:none;}
+#archive-area{
+  position:fixed;inset:0;background:var(--archive-bg);
+  z-index:9160;opacity:0;pointer-events:none;overflow:hidden;
+}
+#archive-scroll{
+  position:absolute;top:0;left:0;right:0;
+  height:200vh;
+  z-index:20; /* explicit — prevents GSAP transform from creating z:auto context below pin-bar */
+}
+#nav-stage{
+  position:relative;height:100vh;
+  /* overflow:visible — pills counter-animate above nav-stage into pin-bar */
+}
+#project-stage{
+  position:relative;height:100vh;
+  background:var(--project-bg);
+  display:flex;flex-direction:column;
+  justify-content:flex-end;padding:0 80px 80px;
+}
+#project-stage::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:56px;
+  background:var(--archive-bg);  /* golden in fun, matches archive bg in all modes */
+  z-index:0;
+}
+.btn-back{
+  position:absolute;top:14px;left:28px;
+  padding:6px 16px;border-radius:var(--pr,14px);
+  border:.5px solid rgba(14,13,12,.1);
+  background:none;
+  font-family:'DM Mono',monospace;font-size:8px;font-weight:300;
+  letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(14,13,12,.35);background:none;border:none;cursor:pointer;
+  transition:color .2s;
+}
+.btn-back:hover{color:rgba(14,13,12,.72);}
+[data-theme="dark"] .btn-back{color:rgba(240,237,232,.32);}
+[data-theme="dark"] .btn-back:hover{color:rgba(240,237,232,.70);}
+[data-theme="light"] .btn-back{color:rgba(20,18,16,.32);}
+[data-theme="light"] .btn-back:hover{color:rgba(20,18,16,.72);}
+.proj-cat{
+  font-family:'DM Mono',monospace;font-size:10px;font-weight:300;
+  letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(14,13,12,.45);margin-bottom:12px;
+}
+.proj-name{
+  font-family:'Satoshi',sans-serif;font-weight:700;
+  font-size:clamp(28px,4vw,52px);letter-spacing:-.02em;
+  color:rgba(14,13,12,.82);margin-bottom:32px;line-height:1.1;
+}
+.proj-placeholder{
+  width:min(480px,60vw);height:3px;
+  background:rgba(14,13,12,.12);border-radius:2px;
+}
+[data-theme="dark"] .proj-cat,[data-theme="dark"] .proj-name,
+[data-theme="dark"] .proj-placeholder{
+  color:rgba(240,237,232,.75);
+}
+[data-theme="dark"] .proj-placeholder{background:rgba(240,237,232,.12);}
+#archive-area.live{pointer-events:all;}
+#btn-close{
+  position:absolute;top:12px;right:24px;z-index:50;
+  font-family:'DM Mono',monospace;font-size:8px;font-weight:300;
+  letter-spacing:.22em;text-transform:uppercase;color:rgba(14,13,12,.38);
+  background:none;border:none;cursor:pointer;transition:color .2s;
+  padding:6px 14px;border-radius:var(--pr,14px);
+  border:.5px solid rgba(14,13,12,.1);
+}
+#btn-close:hover{color:rgba(14,13,12,.78);}
+[data-theme='dark'] #btn-close{color:rgba(240,237,232,.32);}
+[data-theme='dark'] #btn-close:hover{color:rgba(240,237,232,.72);}
+[data-theme='light'] #btn-close{color:rgba(20,18,16,.35);}
+[data-theme='light'] #btn-close:hover{color:rgba(20,18,16,.75);}
+.disc-canvas{position:absolute;top:0;left:0;right:0;height:100%;overflow:hidden;}
+.arc-layer{position:absolute;inset:0;z-index:20;pointer-events:none;overflow:visible;}
+:root,[data-theme="fun"]{--project-bg:#1A1000;}
+[data-theme="dark"]{--project-bg:#0D0C0B;}
+[data-theme="light"]{--project-bg:#EDE0C4;}
+#pin-bar{
+  position:absolute;top:0;left:0;right:0;height:56px;
+  background:var(--archive-bg);
+  z-index:15;  /* below arc-layer z:20 — actual pills show above */
+  display:flex;align-items:center;padding:0 28px;gap:0;
+  opacity:0;pointer-events:none;
+}
+#pin-bar.live{pointer-events:all;}
+.pin-pill{height:var(--ph);border-radius:var(--pr);position:relative;
+  overflow:hidden;cursor:pointer;flex-shrink:0;}
+.pin-pill:hover{filter:brightness(1.12);}
+.pin-pill-lbl{
+  position:absolute;right:32px;left:10px;top:50%;transform:translateY(-50%);
+  white-space:nowrap;text-align:right;overflow:hidden;text-overflow:ellipsis;
+  font-family:'DM Mono',monospace;font-size:12px;font-weight:300;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--disc-text);pointer-events:none;
+}
+.pin-cap{position:absolute;right:0;top:0;width:var(--ph);height:var(--ph);
+  border-radius:50%;background:rgba(0,0,0,.38);pointer-events:none;}
+#go-wrap{position:absolute;left:50%;transform:translateX(-50%);
+  opacity:0;pointer-events:none;z-index:46;}
+#go-wrap.active{pointer-events:all;}
+.action-pill{height:var(--ph);border-radius:var(--pr);
+  display:flex;align-items:center;padding:0 40px;
+  font-family:'DM Mono',monospace;font-size:12px;font-weight:300;
+  letter-spacing:.2em;text-transform:uppercase;white-space:nowrap;cursor:pointer;}
+.action-pill:hover{filter:brightness(1.15);}
+.go-pill{background:#2CB919;color:#0A1A08;}
+.back-pill{background:#C8200C;color:#1A0402;}
+.pill-row{position:absolute;left:0;right:0;height:var(--ph,18px);pointer-events:none;}
+.hz-lcap{
+  /* Left-end cap for disc pill — counter-scales during any hz scaleX change
+     to keep the rounded end perfectly circular at all times.
+     Mirrors the right-end .seg-cap counter-scale approach.           */
+  position:absolute;
+  left:calc(-1 * var(--pr));
+  top:0;
+  width:var(--ph);height:var(--ph);border-radius:50%;
+  background:var(--col);pointer-events:none;z-index:3;
+  transform-origin:50% 50%;
+}
+.pill-hover{--lbl-sx:1;position:absolute;left:0;top:0;height:var(--ph,18px);
+  cursor:pointer;pointer-events:all;transform-origin:0% 50%;}
+.pill-hover.locked{pointer-events:none;}
+.pill-hover:hover{filter:brightness(1.1);}
+.pill-anchor{position:absolute;left:calc(var(--pr,9px) * -1);top:0;}
+.seg{height:var(--ph,18px);background:var(--col);border-radius:var(--pr,9px);
+  transform-origin:0% 50%;position:relative;display:block;}
+.seg-cap{position:absolute;right:0;top:0;width:var(--ph,18px);height:var(--ph,18px);
+  border-radius:50%;background:var(--cap);pointer-events:none;z-index:1;}
+.seg-lbl{
+  position:absolute;right:56px;left:-600px;top:50%;
+  transform:translateY(-50%) scaleX(var(--lbl-sx));transform-origin:100% 50%;
+  white-space:nowrap;text-align:right;
+  font-family:'DM Mono',monospace;font-size:14px;font-weight:300;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--archive-bg);pointer-events:none;
+}
+.float-pill{position:absolute;height:var(--ph,18px);border-radius:var(--pr,9px);
+  overflow:hidden;pointer-events:none;}
+.fpill-lbl{position:absolute;right:28px;left:-400px;top:50%;transform:translateY(-50%);
+  white-space:nowrap;text-align:right;
+  font-family:'DM Mono',monospace;font-size:14px;font-weight:300;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--archive-bg);}
+.fcap{position:absolute;right:0;top:0;width:var(--ph,18px);height:var(--ph,18px);
+  border-radius:50%;background:rgba(0,0,0,.38);}
+.spill{position:absolute;height:var(--ph,18px);border-radius:var(--pr,9px);
+  overflow:visible;pointer-events:all;cursor:pointer;}
+.spill-body{width:100%;height:100%;border-radius:var(--pr,9px);overflow:hidden;position:relative;}
+.spill:hover .spill-body{filter:brightness(1.18);}
+.spill-lbl{position:absolute;right:44px;left:16px;top:50%;transform:translateY(-50%);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;
+  font-family:'DM Mono',monospace;font-size:14px;font-weight:300;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--archive-bg);}
+.scap{position:absolute;right:0;top:0;width:var(--ph,18px);height:var(--ph,18px);
+  border-radius:50%;background:rgba(0,0,0,.22);}
+.spill::after{content:attr(data-full);position:absolute;bottom:calc(100% + 6px);right:0;
+  background:rgba(12,12,12,.92);color:rgba(255,255,255,.82);
+  font-family:'DM Mono',monospace;font-size:7px;font-weight:300;
+  letter-spacing:.12em;text-transform:uppercase;padding:5px 8px;border-radius:2px;
+  white-space:nowrap;pointer-events:none;opacity:0;transform:translateY(4px);
+  transition:opacity .18s,transform .18s;z-index:9100;}
+.spill:hover::after{opacity:1;transform:translateY(0);}
+.cpill{position:absolute;height:var(--ph,18px);border-radius:var(--pr,9px);
+  overflow:hidden;pointer-events:none;}
+.cpill-lbl{position:absolute;right:44px;left:16px;top:50%;transform:translateY(-50%);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;
+  font-family:'DM Mono',monospace;font-size:14px;font-weight:300;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--archive-bg);}
 
-.mpill-cap{
-  position:absolute; right:6px; top:50%; transform:translateY(-50%);
-  width:24px; height:24px; border-radius:50%;
-  background:rgba(0,0,0,0.22); pointer-events:none;
+/* ════════════════════════════════════════════════════════════════
+   STATE TRANSITIONS  ·  Make nav transparent during menu/archive
+   so the menu-overlay colour flows behind it (matches demo design).
+   The nav body class is toggled by nav-system.js.
+   ════════════════════════════════════════════════════════════════ */
+.top-nav{
+  transition: background 0.32s ease, backdrop-filter 0.32s ease,
+              border-color 0.32s ease;
+}
+body.menu-state .top-nav,
+body.archive-state .top-nav{
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom-color: transparent !important;
 }
 
-/* Hide existing Work overlay markup if present (we're replacing it) */
-.w-overlay{ display:none !important; }
-
+/* The dial label/icon use orange. During archive-state the dial sits in the
+   bottom-right corner against the archive's coloured background — keep the
+   orange visible against any theme background. */
+body.archive-state .nd-icon,
+body.archive-state .nd-label{ color: #E85D00; }

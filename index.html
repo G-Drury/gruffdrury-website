@@ -358,8 +358,10 @@ html, body, *, *::before, *::after { cursor: none !important; }
     </nav>
 
     <!-- WORK OVERLAY (live site version) -->
-    <!-- (work overlay removed — replaced by menu pill dropdown) -->
-
+    <!-- (work overlay removed — replaced by pill menu) -->
+        </div>
+      </div>
+    </div>
 
     <!-- HERO -->
     <section id="s-hero">
@@ -789,7 +791,7 @@ html, body, *, *::before, *::after { cursor: none !important; }
   });
 
   /* nav links + CTAs → orange */
-  document.querySelectorAll('.nav-links li span, .nav-links a, .disc-item-overlay').forEach(el => {
+  document.querySelectorAll('#btn-menu, .disc-item-overlay').forEach(el => {
     el.addEventListener('mouseenter', () => setCur('button'));
     el.addEventListener('mouseleave', () => setCur('default'));
   });
@@ -959,12 +961,12 @@ function setHover(on){
   c.style.mixBlendMode=on?'normal':'difference';
   c.style.width=c.style.height=on?'9px':'8px';
 }
-document.querySelectorAll('.nav-link,.nav-links li span,.nav-links a,.nd-icon,.nd-label,.nd-pm,#nd-knob').forEach(function(el){
+document.querySelectorAll('#btn-menu,.nd-icon,.nd-label,.nd-pm,#nd-knob').forEach(function(el){
   el.addEventListener('mouseenter',function(){setHover(true);});
   el.addEventListener('mouseleave',function(){setHover(false);});
 });
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="js/nav-menu.js"></script>
+<script src="js/nav-system.js"></script>
 </body>
 </html>
